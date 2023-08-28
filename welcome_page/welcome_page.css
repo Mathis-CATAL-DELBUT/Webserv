@@ -1,0 +1,17 @@
+#welcome
+{
+    font-size: 100px;
+    color: rgba(123, 123, 123, 0.8);
+    text-align: center;
+    margin-top: 100px;
+    margin-bottom: 0px;
+}
+
+#text
+{
+    font-size: 20px;
+    color: rgba(123, 123, 123, 0.8);
+
+    text-align: center;
+    margin-top: 20px;
+}

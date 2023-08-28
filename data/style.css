@@ -1,0 +1,37 @@
+
+body
+{
+    background-color: #000;
+    color: #fff;
+}
+
+h1
+{
+    text-align: center;
+    font-size: 75px;
+}
+
+a
+{
+    text-decoration: none;
+}
+
+.lien-container
+{
+    text-align: center;
+    font-size: 50px;
+}
+
+.img_container
+{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tete
+{
+    width: 200px;
+    height: 200px;
+  border-radius: 50%;
+}
