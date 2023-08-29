@@ -6,11 +6,13 @@ body
     margin: 0;
     padding: 0;
     height: 100%;
+    overflow: hidden;
 }
 
 .cat
 {
     overflow: hidden;
+    z-index: -1;
 }
 
 h1
@@ -47,8 +49,7 @@ a
 
 #norminet
 {
-    width: 100vw;
-    height: 100vh;
+    position: relative;
 }
 
 .mot-apparait 
@@ -71,3 +72,36 @@ a
     border: 3px solid #ccc;
     border-radius: 10px;
 }
+
+.go_back
+{
+    position: relative;
+    color : #000;
+    padding: 5px;
+    background-color: #FFF;
+    border: 3px solid #818181;
+    border-radius: 10px;
+    z-index: 1;
+}
+
+.go_back:hover
+{
+    background-color: #818181;
+}
+
+.centered-container 
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#go_back_browser
+{
+    display: inline-block;
+    justify-content: center;
+    align-items: center;
+    height: 15px;
+}
+  
