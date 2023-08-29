@@ -3,6 +3,14 @@ body
 {
     background-color: #000;
     color: #fff;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.cat
+{
+    overflow: hidden;
 }
 
 h1
@@ -13,6 +21,7 @@ h1
 
 a
 {
+    color: #8707a1;
     text-decoration: none;
 }
 
@@ -34,4 +43,31 @@ a
     width: 200px;
     height: 200px;
   border-radius: 50%;
+}
+
+#norminet
+{
+    width: 100vw;
+    height: 100vh;
+}
+
+.mot-apparait 
+{
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+  
+.mot-hover:hover + .mot-apparait 
+{
+    opacity: 1;
+}
+
+#browser
+{
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #959595;
+    border: 3px solid #ccc;
+    border-radius: 10px;
 }
