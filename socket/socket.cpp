@@ -9,13 +9,47 @@
 #include <errno.h>
 #include <unistd.h>
 #include <cstring>
+#include <sstream>
+#include <fstream>
 
 # define SERVER_PORT 8080
+# define BUFFER_SIZE 10000
+
+void clientRequest(char *buffer, int len)
+{
+    std::string request(buffer);
+    std::cout << "<<<<< CLIENT REQUEST >>>>>" << std::endl << std::endl;
+    for (int i = 0 ; i < request.size() ; i++)
+        std::cout << request;
+    std::cout << std::endl << std::endl;
+}
+
+std::string generateResponse(const std::string& htmlContent) {
+    std::ostringstream response;
+    response << "HTTP/1.1 200 OK\r\n";
+    response << "Content-Type: text/html\r\n";
+    response << "Content-Length: " << htmlContent.length() << "\r\n";
+    response << "\r\n";
+    response << htmlContent;
+    return (response.str());
+}
+
+std::string answerFormat()
+{
+    std::string htmlFilePath = "../html/data/browser.html";
+    std::ifstream ifs(htmlFilePath);
+    std::stringstream iss;
+    iss << ifs.rdbuf();
+    std::string htmlContent = iss.str();
+    return (generateResponse(htmlContent));
+}
+
 
 int main()
 {
     int i, len, listen_sd, rc, max_sd, desc_ready, close_conn, new_sd;
-    char buffer[80];
+    char bufferR[BUFFER_SIZE];
+    char bufferS[BUFFER_SIZE];
     int on = 1;
     int end_server = false;
 
@@ -112,7 +146,7 @@ int main()
                     while (true)
                     {
                         // recoit des donnees de la socket i et les place dans buffer, renvoie nb bytes recues
-                        rc = recv(i, buffer, sizeof(buffer), 0);
+                        rc = recv(i, bufferR, sizeof(bufferR), 0);
                         if (rc < 0)
                         {
                             // erreur ou en attente de reception des donnees -> boucle interrompue
@@ -130,10 +164,11 @@ int main()
                             close_conn = true;
                             break;
                         }
-                        len = rc;
+                        clientRequest(bufferR, rc);
+                        std::string response = answerFormat();
                         std::cout << len << " bytes received" << std::endl;
                         // renvoie ces memes donnees au client
-                        rc = send(i, buffer, len, 0);
+                        rc = send(i, response.c_str(), response.size(), 0);
                         if (rc < 0)
                         {
                             std::cerr << "send() failed" << std::endl;
