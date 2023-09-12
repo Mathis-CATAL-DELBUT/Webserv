@@ -28,20 +28,35 @@ class Request
         ~Request();
         Request &operator=(Request const &rhs);
 
-        void parsingFormat();
+        void requestTreatment(char *request);
+        // void print();
+
+        void setMethod(int a);
+        void setStatusCode(int a);
+        void setProtocol(std::string str);
+        void setRessourcePath(std::string str);
+        void setContentType(std::string str);
+        void setBufferRequest(char *str);
+
+        int getMethod() const;
+        int getStatusCode() const;
+        std::string getProtocol() const;
+        std::string getRessourcePath() const;
+        std::string getContentType() const;
+
 
     private:
         int _method;
         int _statusCode;
-        int _returnCode;
         std::string _protocol;
         std::string _ressourcePath;
         std::string _contentType;
         char bufferRequest[BUFFER_SIZE];
 
-        void statutLineParsing();
-        void headerParsing();
-        void bodyParsing();
+        // void parsingFormat();
+        // void statutLineParsing();
+        // void headerParsing();
+        // void bodyParsing();
 };
 
 #endif

@@ -18,7 +18,7 @@
 #include "Request.hpp"
 #include "Response.hpp"
 
-class Response;
+// class Response;
 class Request;
 
 class Webserv
@@ -47,14 +47,15 @@ class Webserv
         timeval _timeOut;
 
         Request _request;
-        Response _response;
+        // Response _response;
         void newConnHandling();
         void existingConnHandling(int currSd);
         void closeConn(int currSd);
         void receiveRequest(int currSd);
         void sendResponse(int currSd);
 
-        void handlingError();
+        void handlingErrorConn();
+        int handlingErrorInit(std::string function);
 };
 
 #endif

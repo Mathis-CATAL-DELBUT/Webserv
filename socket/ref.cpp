@@ -47,46 +47,46 @@ std::string answerFormat()
 
 int main()
 {
-    // int i, len, listen_sd, rc, max_sd, desc_ready, close_conn, new_sd;
-    // char bufferR[BUFFER_SIZE];
-    // char bufferS[BUFFER_SIZE];
-    // int on = 1;
-    // int end_server = false;
+    int i, len, listen_sd, rc, max_sd, desc_ready, close_conn, new_sd;
+    char bufferR[BUFFER_SIZE];
+    char bufferS[BUFFER_SIZE];
+    int on = 1;
+    int end_server = false;
 
-    // fd_set master_set, working_set;
-    // sockaddr_in6 addr;
-    // timeval timeout;
+    fd_set master_set, working_set;
+    sockaddr_in6 addr;
+    timeval timeout;
     
-    // listen_sd = socket(AF_INET6, SOCK_STREAM, 0);
-    // if (listen_sd < 0)
-    //     return (std::cerr << "listen_sd() failed" << std::endl, -1);
+    listen_sd = socket(AF_INET6, SOCK_STREAM, 0);
+    if (listen_sd < 0)
+        return (std::cerr << "listen_sd() failed" << std::endl, -1);
 
-    // rc = setsockopt(listen_sd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on));
-    // if (rc < 0)
-    //     return (std::cerr << "setsockopt() failed" << std::endl, close(listen_sd), -1);
-    // rc = ioctl(listen_sd, FIONBIO, (char*)&on);
-    // if (rc < 0)
-    //     return (std::cerr << "ioctl() failed" << std::endl, close(listen_sd), -1);
+    rc = setsockopt(listen_sd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on));
+    if (rc < 0)
+        return (std::cerr << "setsockopt() failed" << std::endl, close(listen_sd), -1);
+    rc = ioctl(listen_sd, FIONBIO, (char*)&on);
+    if (rc < 0)
+        return (std::cerr << "ioctl() failed" << std::endl, close(listen_sd), -1);
 
-    // std::memset(&addr, 0, sizeof(addr));
-    // addr.sin6_family = AF_INET6;
-    // memcpy(&addr.sin6_addr, &in6addr_any, sizeof(in6addr_any));
-    // addr.sin6_port = htons(SERVER_PORT);
-    // rc = bind(listen_sd, (struct sockaddr *)&addr, sizeof(addr));
-    // if (rc < 0)
-    //     return (std::cerr << "bind() failed" << std::endl, close(listen_sd), -1);
+    std::memset(&addr, 0, sizeof(addr));
+    addr.sin6_family = AF_INET6;
+    memcpy(&addr.sin6_addr, &in6addr_any, sizeof(in6addr_any));
+    addr.sin6_port = htons(SERVER_PORT);
+    rc = bind(listen_sd, (struct sockaddr *)&addr, sizeof(addr));
+    if (rc < 0)
+        return (std::cerr << "bind() failed" << std::endl, close(listen_sd), -1);
 
-    // rc = listen(listen_sd, 32);
-    // if (rc < 0)
-    //     return (std::cerr << "listen() failed" << std::endl, close(listen_sd), -1);
+    rc = listen(listen_sd, 32);
+    if (rc < 0)
+        return (std::cerr << "listen() failed" << std::endl, close(listen_sd), -1);
 
-    // FD_ZERO(&master_set);
-    // max_sd = listen_sd;
-    // // ajoute le fd listen_sd a master_set (= notre ensemble de soket a surveiller par select())
-    // FD_SET(listen_sd, &master_set);
+    FD_ZERO(&master_set);
+    max_sd = listen_sd;
+    // ajoute le fd listen_sd a master_set (= notre ensemble de soket a surveiller par select())
+    FD_SET(listen_sd, &master_set);
 
-    // timeout.tv_sec = 3 * 60;
-    // timeout.tv_usec = 0;
+    timeout.tv_sec = 3 * 60;
+    timeout.tv_usec = 0;
     
     while (end_server == false)
     {

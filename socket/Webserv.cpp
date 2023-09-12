@@ -17,18 +17,26 @@ Webserv &Webserv::operator=(Webserv const &rhs)
     return (*this);
 }
 
+int Webserv::handlingErrorInit(std::string function)
+{
+    std::cerr << function << "() failed" << std::endl;
+    if (_listenSd > 0)
+        close(_listenSd);
+    return (-1);
+}
+
 bool Webserv::init()
 {
-   _listenSd = socket(AF_INET, SOCK_STREAM, 0);
+    sockaddr_in6 addr;
+   _listenSd = socket(AF_INET6, SOCK_STREAM, 0);
     if (_listenSd < 0)
-        return (std::cerr << "socket() failed" << std::endl, -1);
-
+        return (handlingErrorInit("listen"));
     _returnCode = setsockopt(_listenSd, SOL_SOCKET, SO_REUSEADDR, (char*)&_on, sizeof(_on));
     if (_returnCode < 0)
-        return (std::cerr << "setsockopt() failed" << std::endl, close(_listenSd), -1);
+        return (handlingErrorInit("setsockopt"));
     _returnCode = ioctl(_listenSd, FIONBIO, (char*)&_on);
     if (_returnCode < 0)
-        return (std::cerr << "ioctl() failed" << std::endl, close(_listenSd), -1);
+        return (handlingErrorInit("ioctl"));
 
     std::memset(&_addr, 0, sizeof(_addr));
     _addr.sin6_family = AF_INET6;
@@ -36,15 +44,14 @@ bool Webserv::init()
     _addr.sin6_port = htons(_serverPort);
     _returnCode = bind(_listenSd, (struct sockaddr *)&_addr, sizeof(_addr));
     if (_returnCode < 0)
-        return (std::cerr << "bind() failed" << std::endl, close(_listenSd), -1);
+        return (handlingErrorInit("bind"));
 
     _returnCode = listen(_listenSd, 32);
     if (_returnCode < 0)
-        return (std::cerr << "listen() failed" << std::endl, close(_listenSd), -1);
+        return (handlingErrorInit("listen"));
 
     FD_ZERO(&_masterSet);
     _maxSd = _listenSd;
-    // ajoute le fd _listenSd a _masterSet (= notre ensemble de soket a surveiller par select())
     FD_SET(_listenSd, &_masterSet);
     return (EXIT_SUCCESS);
 }
@@ -58,6 +65,7 @@ bool Webserv::process()
         _returnCode = select(_maxSd + 1, &_workingSet, NULL, NULL, &_timeOut);
         if (_returnCode <= 0){
             std::cerr << (_returnCode < 0 ? "select() failed" : "select() timed out. End program") << std::endl;
+            perror("select");
             break;
         }
         _descReady = _returnCode;
@@ -72,11 +80,11 @@ bool Webserv::process()
                     existingConnHandling(i);
             }
         }  
-        for (int i = 0 ; i <= _maxSd ; i++)
-        {
-            if (FD_ISSET(i, &_masterSet))
-                close(i);
-        }
+    }
+    for (int i = 0 ; i <= _maxSd ; i++)
+    {
+        if (FD_ISSET(i, &_masterSet))
+            close(i);
     }
     return (EXIT_SUCCESS);
 }
@@ -122,13 +130,13 @@ void Webserv::existingConnHandling(int currSd)
     while (_run)
     {
         receiveRequest(currSd);
-        sendResponse(currSd);
+        // sendResponse(currSd);
         if (_closeConn)
             closeConn(currSd);
     }
 }
 
-void Webserv::handlingError()
+void Webserv::handlingErrorConn()
 {
     if (_returnCode < 0)
     {
@@ -150,16 +158,18 @@ void Webserv::handlingError()
 
 void Webserv::receiveRequest(int currSd)
 {
-    _returnCode = recv(currSd, _request.bufferRequest, sizeof( _request.bufferRequest), 0);
+    char bf[BUFFER_SIZE];
+    _returnCode = recv(currSd, bf, sizeof( bf), 0);
     if (_returnCode <= 0)
-        return (handlingError());
-    _request.parsingFormat();
+        return (handlingErrorConn());
+    _request.requestTreatment(bf);
+    // _request.print();
 }
 
-void Webserv::sendResponse(int currSd)
-{
-    _response.generate();
-    _returnCode = send(currSd, _response._response.c_str(), _response._contentLength, 0);
-    if (_returnCode < 0)
-        handlingError();
-}
+// void Webserv::sendResponse(int currSd)
+// {
+//     _response.generate(_request);
+//     _returnCode = send(currSd, _response.getResponse().c_str(), _response.getContentLength(), 0);
+//     if (_returnCode < 0)
+//         handlingError();
+// }
