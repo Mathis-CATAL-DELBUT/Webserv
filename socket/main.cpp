@@ -4,8 +4,8 @@
 int main()
 {
     Webserv ws;
-    if (ws.init() == -1)
+    if (ws.init() == false)
         return 0;
-    if (ws.process() == -1)
+    if (ws.process() == false)
         return 0;
 }

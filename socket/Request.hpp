@@ -14,6 +14,8 @@
 #include <cstring>
 #include <sstream>
 #include <fstream>
+#include <algorithm>
+#include <vector>
 
 # define BUFFER_SIZE 10000
 # define GET 0
@@ -31,29 +33,32 @@ class Request
         void requestTreatment(char *request);
         // void print();
 
-        void setMethod(int a);
-        void setStatusCode(int a);
-        void setProtocol(std::string str);
-        void setRessourcePath(std::string str);
-        void setContentType(std::string str);
-        void setBufferRequest(char *str);
+        // void setMethod(int a);
+        // void setStatusCode(int a);
+        // void setProtocol(std::string str);
+        // void setRessourcePath(std::string str);
+        // void setContentType(std::string str);
+        void setRawRequest(std::string str);
 
         int getMethod() const;
         int getStatusCode() const;
         std::string getProtocol() const;
-        std::string getRessourcePath() const;
+        std::string getRessource() const;
         std::string getContentType() const;
-
+        std::string getRawRequest() const;
+        std::string getExtension() const;
 
     private:
         int _method;
         int _statusCode;
         std::string _protocol;
-        std::string _ressourcePath;
+        std::string _ressource;
+        std::string _extension;
         std::string _contentType;
-        char bufferRequest[BUFFER_SIZE];
+        std::string rawRequest;
 
-        // void parsingFormat();
+        void parsingFormat();
+        std::string infile(std::string str, char c);
         // void statutLineParsing();
         // void headerParsing();
         // void bodyParsing();

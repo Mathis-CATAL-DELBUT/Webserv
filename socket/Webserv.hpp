@@ -14,6 +14,9 @@
 #include <cstring>
 #include <sstream>
 #include <fstream>
+#include <algorithm>
+#include <vector>
+#include <unordered_map>
 
 #include "Request.hpp"
 #include "Response.hpp"
@@ -34,7 +37,6 @@ class Webserv
     private:
         int _listenSd;
         int _maxSd;
-        int _on;
         int _returnCode;
         int _serverPort;
         int _newSd;
@@ -43,7 +45,6 @@ class Webserv
         int _closeConn;
         int _run;
         fd_set _masterSet, _workingSet;
-        sockaddr_in6 _addr;
         timeval _timeOut;
 
         Request _request;
@@ -51,10 +52,12 @@ class Webserv
         void newConnHandling();
         void existingConnHandling(int currSd);
         void closeConn(int currSd);
-        void receiveRequest(int currSd);
-        void sendResponse(int currSd);
+        int receiveRequest(int currSd);
+        
+        int sendResponse(int currSd);
+        std::string formating(std::string content);
 
-        void handlingErrorConn();
+        int handlingErrorConn();
         int handlingErrorInit(std::string function);
 };
 

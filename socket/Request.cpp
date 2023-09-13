@@ -13,29 +13,29 @@ Request &Request::operator=(Request const &rhs)
     return (*this);
 }
 
-void Request::setMethod(int a)
+// void Request::setMethod(int a)
+// {
+//     this->_method = a;
+// }
+// void Request::setStatusCode(int a)
+// {
+//     this->_statusCode = a;
+// }
+// void Request::setProtocol(std::string str)
+// {
+//     this->_protocol = str;
+// }
+// void Request::setRessourcePath(std::string str)
+// {
+//     this->_ressourcePath = str;
+// }
+// void Request::setContentType(std::string str)
+// {
+//     this->_contentType = str;
+// }
+void Request::setRawRequest(std::string str)
 {
-    this->_method = a;
-}
-void Request::setStatusCode(int a)
-{
-    this->_statusCode = a;
-}
-void Request::setProtocol(std::string str)
-{
-    this->_protocol = str;
-}
-void Request::setRessourcePath(std::string str)
-{
-    this->_ressourcePath = str;
-}
-void Request::setContentType(std::string str)
-{
-    this->_contentType = str;
-}
-void Request::setBufferRequest(char *str)
-{
-    memcpy(this->bufferRequest, str, strlen(str));
+    this->rawRequest = str;
 }
 
 int Request::getMethod() const
@@ -53,9 +53,9 @@ std::string Request::getProtocol() const
     return (this->_protocol);
 }
 
-std::string Request::getRessourcePath() const
+std::string Request::getRessource() const
 {
-    return (this->_ressourcePath);
+    return (this->_ressource);
 }
 
 std::string Request::getContentType() const
@@ -63,12 +63,57 @@ std::string Request::getContentType() const
     return (this->_contentType);
 }
 
+std::string Request::getRawRequest() const
+{
+    return (this->rawRequest);
+}
+
+std::string Request::getExtension() const
+{
+    return (this->_extension);
+}
+
 void Request::requestTreatment(char *buffer)
 {
-    std::string request(buffer);
+    std::string r(buffer);
+    setRawRequest(r);
     std::cout << "<<<<< CLIENT REQUEST >>>>>" << std::endl << std::endl;
-    for (int i = 0 ; i < request.size() ; i++)
-        std::cout << request;
-    std::cout << std::endl << std::endl;
+    // for (int i = 0 ; i < r.size() ; i++)
+    //     std::cout << r;
+    parsingFormat();
+}
+
+std::string Request::infile(std::string str, char c)
+{
+    // std::vector<std::string> v;
+    // int pos = str.find(c);
+    // while (pos != std::string::npos)
+    // {
+    //     v.push_back(str.substr(0, pos - 1));
+    //     str.erase(pos);
+    //     pos = str.find(c);
+    // }
+    // v.push_back(str);
+    // return v;
+    int i = str.size() - 1;
+    for (; str[i] != '/' ; i--) {}
+        return str.substr(i + 1);
+}
+
+void Request::parsingFormat()
+{
+    std::istringstream iss(this->rawRequest);
+    std::string tmp;
+    // std::vector<std::string> path;
+    iss >> tmp;
+    this->_method = (tmp == "GET" ? GET : (tmp == "DELETE" ? DELETE : POST));
+    iss >> tmp;
+    std::string path = infile(tmp, '/');
+    std::cout << path.size() << std::endl;
+    this->_ressource = path;
+    this->_extension = _ressource.substr(_ressource.find('.') + 1);
+    iss >> this->_protocol;
+    std::cout << "Request pseudo parsed !" << std::endl;
+    // exit(0);
 }
 
