@@ -63,7 +63,7 @@ bool Webserv::process()
     while (!_endServ)
     {
         memcpy(&_workingSet, &_masterSet, sizeof(_masterSet));
-        std::cout << "Waiting on select()..." << std::endl;
+        // std::cout << "Waiting on select()..." << std::endl;
         _returnCode = select(_maxSd + 1, &_workingSet, NULL, NULL, &_timeOut);
         if (_returnCode <= 0){
             std::cerr << (_returnCode < 0 ? "select() failed" : "select() timed out. End program") << std::endl;
@@ -128,7 +128,7 @@ void Webserv::closeConn(int currSd)
 void Webserv::existingConnHandling(int currSd)
 {
     // int run = 1;
-    std::cout << "Descriptor " << currSd << " is readable" << std::endl;
+    // std::cout << "Descriptor " << currSd << " is readable" << std::endl;
     _closeConn = false;
     while (true)
     {
@@ -155,7 +155,7 @@ int Webserv::handlingErrorConn()
     }
     if (_returnCode == 0)
     {
-        std::cerr << "Connection closed" << std::endl;
+        // std::cerr << "Connection closed" << std::endl;
         _closeConn = true;
         // _run = 0;
         return 0;
@@ -187,6 +187,7 @@ int Webserv::sendResponse(int currSd)
     std::string path;
     std::string contentType;
     path = "../html/";
+    std::cout << "EXTENSION = " << _request.getExtension() << std::endl;
     if (_request.getExtension() == "webp" || _request.getExtension() == "jpg")
         path += "image/";
     else
@@ -194,11 +195,12 @@ int Webserv::sendResponse(int currSd)
     std::cout << "ressource = " << _request.getRessource() << std::endl;
     path += _request.getRessource();
     std::cout << "PATH = " << path << std::endl;
-    std::ifstream ifs(path);
+    std::ifstream ifs(path.c_str());
     std::stringstream iss;
     iss << ifs.rdbuf();
     std::string content = iss.str();
     std::string response = formating(content);
+    // std::cout << response << std::endl;
     int rc = send(currSd, response.c_str(), response.size(), 0);
     if (rc < 0)
         return (handlingErrorConn());
@@ -210,21 +212,33 @@ std::string Webserv::formating(std::string content)
     std::ostringstream response;
     std::unordered_map<std::string, std::string> map{
         {"webp", "image"},
-        {"jpg", "image"},
+        {"jpeg", "image"},
         {"html", "text"},
         {"javascript", "application"},
         {"css", "text"}
     };
     std::string type;
-    type = (this->_request.getExtension() == "js" ? "javascript" : this->_request.getExtension());
-
+    type = (this->_request.getExtension() == "js" ? "javascript" : (this->_request.getExtension() == "jpg" ? "jpeg" : this->_request.getExtension()));
     response << _request.getProtocol() << " 200 OK\r\n";
     std::cout << _request.getProtocol() << " 200 OK\r\n";
     response << "Content-Type: " << map[type] << "/" << type << "\r\n";
     std::cout << "Content-Type: " << map[type] << "/" << type << "\r\n";
-    response << "Content-Length: " << content.size() << "\r\n";
-    std::cout << "Content-Length: " << content.size() << "\r\n";
+    response << "Content-Length: " << content.length() << "\r\n";
+    std::cout << "Content-Length: " << content.length() << "\r\n";
     response << "\r\n";
     response << content;
     return (response.str());
 }
+
+//      for (int i = 0; i <= _max_fd; ++i) {
+        //     if (FD_ISSET(i, &working_set_recv) && i == 0) {
+        //         if (userExit())
+        //             return(false);
+        //     }
+        //     else if (FD_ISSET(i, &working_set_recv) && isServerSocket(i)) 
+        //         acceptNewCnx(i);
+        //     else if (FD_ISSET(i, &working_set_recv) && _requests.count(i))
+        //         readRequest(i, *_requests[i]);
+        //     else if (FD_ISSET(i, &working_set_write) && _requests.count(i))
+        //         sendResponse(i, *_requests[i]); ->to analyse
+        // }

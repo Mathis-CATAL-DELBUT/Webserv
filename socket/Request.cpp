@@ -78,8 +78,8 @@ void Request::requestTreatment(char *buffer)
     std::string r(buffer);
     setRawRequest(r);
     std::cout << "<<<<< CLIENT REQUEST >>>>>" << std::endl << std::endl;
-    // for (int i = 0 ; i < r.size() ; i++)
-    //     std::cout << r;
+    for (int i = 0 ; i < r.size() ; i++)
+        std::cout << r;
     parsingFormat();
 }
 
