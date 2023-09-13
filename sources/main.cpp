@@ -6,15 +6,26 @@
 /*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 14:41:32 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/09/11 14:49:45 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/09/13 10:43:22 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing.hpp"
 
-int main()
+int main(int argc, char **argv)
 {
-    Parsing p("config/default.conf");
-    std::cout << p.getServerName() << std::endl;
+    if (argc != 2)
+        return (std::cout << "Error: number of arguments" << std::endl, 1);
+    Parsing p(argv[1]);
+
+    // Affichage des données parsées
+    for (int i = 0; p.getListen()[i] ; i++)
+        std::cout << "listen: '" << p.getListen()[i] << "'" << std::endl;
+    std::cout << "server_name: '" << p.getServerName() << "'" << std::endl;
+    std::cout << "root: '" << p.getRoot() << "'" << std::endl;
+    std::cout << "index: '" << p.getIndex() << "'" << std::endl;
+    int j = p.getErrorPage().size();
+    for (int i = 0; i != j ; i++)
+        std::cout << "error_page: '" << p.getErrorPage()[i] << "'" << std::endl;
     return (0);
 }

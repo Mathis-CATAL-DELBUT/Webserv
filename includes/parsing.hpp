@@ -6,7 +6,7 @@
 /*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:59 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/09/11 14:58:16 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/09/13 11:33:17 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,4 +38,14 @@ class Parsing
         std::string root;
         std::string index;
         std::vector<std::string> error_page;  
+
+        int setListen(std::string file);
+        int setServerName(std::string file);
+        int setRoot(std::string file);
+        int setIndex(std::string file);
+        int setErrorPage(std::string file);
+
+        void removeSpace(std::string &str);
+        std::string  parseSoloElt(std::string file, std::string name);
+        // int  parseMultiElt(std::string &str, std::vector<std::string> &elt);
 };
