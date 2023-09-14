@@ -174,14 +174,6 @@ int Webserv::receiveRequest(int currSd)
     return 1;
 }
 
-// void Webserv::sendResponse(int currSd)
-// {
-//     _response.generate(_request);
-//     _returnCode = send(currSd, _response.getResponse().c_str(), _response.getContentLength(), 0);
-//     if (_returnCode < 0)
-//         handlingError();
-// }
-
 int Webserv::sendResponse(int currSd)
 {
     std::string path;

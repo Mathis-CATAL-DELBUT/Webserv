@@ -21,8 +21,8 @@
 #include "Request.hpp"
 #include "Response.hpp"
 
-// class Response;
 class Request;
+class Response;
 
 class Webserv
 {

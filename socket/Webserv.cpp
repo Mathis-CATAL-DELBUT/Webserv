@@ -63,7 +63,7 @@ bool Webserv::process()
     while (!_endServ)
     {
         memcpy(&_workingSet, &_masterSet, sizeof(_masterSet));
-        // std::cout << "Waiting on select()..." << std::endl;
+        std::cout << "Waiting on select()..." << std::endl;
         _returnCode = select(_maxSd + 1, &_workingSet, NULL, NULL, &_timeOut);
         if (_returnCode <= 0){
             std::cerr << (_returnCode < 0 ? "select() failed" : "select() timed out. End program") << std::endl;
@@ -128,7 +128,7 @@ void Webserv::closeConn(int currSd)
 void Webserv::existingConnHandling(int currSd)
 {
     // int run = 1;
-    // std::cout << "Descriptor " << currSd << " is readable" << std::endl;
+    std::cout << "Descriptor " << currSd << " is readable" << std::endl;
     _closeConn = false;
     while (true)
     {
@@ -176,6 +176,7 @@ int Webserv::sendResponse(int currSd)
 {
     this->_response.generateResponse(this->_request);
     int rc = send(currSd, (this->_response.getResponse()).c_str(), this->_response.getContentLength(), 0);
+    std::cout << "SENT" << std::endl;
     if (rc < 0)
         return (handlingErrorConn());
     return 1;

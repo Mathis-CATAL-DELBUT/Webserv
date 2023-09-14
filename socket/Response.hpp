@@ -1,10 +1,24 @@
 #ifndef RESPONSE_H
 # define RESPONSE_H
 
-#include "Request.hpp"
-#include "Webserv.hpp"
+#include <iostream>
+#include <string>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/time.h>
+#include <sys/ioctl.h>
+#include <netinet/in.h>
+#include <sys/select.h>
+#include <errno.h>
+#include <unistd.h>
+#include <cstring>
+#include <sstream>
+#include <fstream>
+#include <algorithm>
+#include <vector>
+#include <unordered_map>
 
-class Request ;
+#include "Request.hpp"
 
 class Response
 {
@@ -35,7 +49,6 @@ class Response
         void configHeader(Request &request);
         void configBody(Request &request);
         void buildingFormattedResponse();
-        void addingFormat(Request &request);
         void getContent();
         void getPathToContent(Request &request);
 };
