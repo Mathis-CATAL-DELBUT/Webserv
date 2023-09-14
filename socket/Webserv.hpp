@@ -48,7 +48,7 @@ class Webserv
         timeval _timeOut;
 
         Request _request;
-        // Response _response;
+        Response _response;
         void newConnHandling();
         void existingConnHandling(int currSd);
         void closeConn(int currSd);

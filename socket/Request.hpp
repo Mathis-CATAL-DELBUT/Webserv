@@ -31,13 +31,6 @@ class Request
         Request &operator=(Request const &rhs);
 
         void requestTreatment(char *request);
-        // void print();
-
-        // void setMethod(int a);
-        // void setStatusCode(int a);
-        // void setProtocol(std::string str);
-        // void setRessourcePath(std::string str);
-        // void setContentType(std::string str);
         void setRawRequest(std::string str);
 
         int getMethod() const;

@@ -1,24 +1,10 @@
 #ifndef RESPONSE_H
 # define RESPONSE_H
 
-#include <iostream>
-#include <string>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/time.h>
-#include <sys/ioctl.h>
-#include <netinet/in.h>
-#include <sys/select.h>
-#include <errno.h>
-#include <unistd.h>
-#include <cstring>
-#include <sstream>
-#include <fstream>
+#include "Request.hpp"
+#include "Webserv.hpp"
 
-# define BUFFER_SIZE 10000
-# define GET 0
-# define POST 1
-# define DELETE 2
+class Request ;
 
 class Response
 {
@@ -28,37 +14,30 @@ class Response
         ~Response();
         Response &operator=(Response const &rhs);
 
-        void generate(Request &request);
-
-        void setStatusCode(int a);
-        void setContentLength(int a);
-        void setProtocol(std::string str);
-        void setStatusText(std::string str);
-        void setResponse(std::string str);
-        void setContentType(std::string str);
-        void setBufferResponse(char *str);
+        void generateResponse(Request &request);
 
         int getContentLength() const;
-        int getStatusCode() const;
-        std::string getProtocol() const;
-        std::string getStatusText() const;
         std::string getResponse() const;
-        std::string getContentType() const;
-        char *getBufferResponse() const;
+
 
     private:
         int _statusCode;
         int _contentLength;
-        std::string _protocol;
+        std::string _pathToContent;
+        std::string _rawContent;
         std::string _statusText;
         std::string _contentType;
         std::string _response;
-        char bufferResponse[BUFFER_SIZE];
+        std::string _protocol;
+        std::string _modifExtension;
 
-        void addingFormat();
-        void statutLineFormating();
-        void headerFormating();
-        void bodyFormating();
+        void addingFormat(Request &request);
+        void configHeader(Request &request);
+        void configBody(Request &request);
+        void buildingFormattedResponse();
+        void addingFormat(Request &request);
+        void getContent();
+        void getPathToContent(Request &request);
 };
 
 #endif

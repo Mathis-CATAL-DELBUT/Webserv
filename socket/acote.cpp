@@ -150,12 +150,14 @@ int Webserv::handlingErrorConn()
             std::cerr << "recv() or send() failed" << std::endl;
             _closeConn = true;
         }
+        // _run = 0;
         return 0;
     }
     if (_returnCode == 0)
     {
-        std::cerr << "Connection closed" << std::endl;
+        // std::cerr << "Connection closed" << std::endl;
         _closeConn = true;
+        // _run = 0;
         return 0;
     }
     return 0;
@@ -168,19 +170,65 @@ int Webserv::receiveRequest(int currSd)
     if (_returnCode <= 0)
         return (handlingErrorConn());
     _request.requestTreatment(bf);
+    // _request.print();
     return 1;
 }
 
+// void Webserv::sendResponse(int currSd)
+// {
+//     _response.generate(_request);
+//     _returnCode = send(currSd, _response.getResponse().c_str(), _response.getContentLength(), 0);
+//     if (_returnCode < 0)
+//         handlingError();
+// }
 
 int Webserv::sendResponse(int currSd)
 {
-    this->_response.generateResponse(this->_request);
-    int rc = send(currSd, (this->_response.getResponse()).c_str(), this->_response.getContentLength(), 0);
+    std::string path;
+    std::string contentType;
+    path = "../html/";
+    std::cout << "EXTENSION = " << _request.getExtension() << std::endl;
+    if (_request.getExtension() == "webp" || _request.getExtension() == "jpg")
+        path += "image/";
+    else
+        path += "data/";
+    std::cout << "ressource = " << _request.getRessource() << std::endl;
+    path += _request.getRessource();
+    std::cout << "PATH = " << path << std::endl;
+    std::ifstream ifs(path.c_str());
+    std::stringstream iss;
+    iss << ifs.rdbuf();
+    std::string content = iss.str();
+    std::string response = formating(content);
+    // std::cout << response << std::endl;
+    int rc = send(currSd, response.c_str(), response.size(), 0);
     if (rc < 0)
         return (handlingErrorConn());
     return 1;
 }
 
+std::string Webserv::formating(std::string content) 
+{
+    std::ostringstream response;
+    std::unordered_map<std::string, std::string> map{
+        {"webp", "image"},
+        {"jpeg", "image"},
+        {"html", "text"},
+        {"javascript", "application"},
+        {"css", "text"}
+    };
+    std::string type;
+    type = (this->_request.getExtension() == "js" ? "javascript" : (this->_request.getExtension() == "jpg" ? "jpeg" : this->_request.getExtension()));
+    response << _request.getProtocol() << " 200 OK\r\n";
+    std::cout << _request.getProtocol() << " 200 OK\r\n";
+    response << "Content-Type: " << map[type] << "/" << type << "\r\n";
+    std::cout << "Content-Type: " << map[type] << "/" << type << "\r\n";
+    response << "Content-Length: " << content.length() << "\r\n";
+    std::cout << "Content-Length: " << content.length() << "\r\n";
+    response << "\r\n";
+    response << content;
+    return (response.str());
+}
 
 //      for (int i = 0; i <= _max_fd; ++i) {
         //     if (FD_ISSET(i, &working_set_recv) && i == 0) {
