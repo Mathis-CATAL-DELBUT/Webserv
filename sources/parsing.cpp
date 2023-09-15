@@ -6,7 +6,7 @@
 /*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:51 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/09/13 11:42:13 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/09/15 10:43:35 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,11 @@ Parsing::Parsing(std::string file)
         std::cout << "Error: " << file  << ": not foud or no perm" << std::endl;
         exit(1);
     }
-    if (setListen(file) || setServerName(file) || setRoot(file) || setIndex(file) || setErrorPage(file))
+    if (setListen(file) || setServerName(file) || 
+        setRoot(file) || setIndex(file) || 
+        setErrorPage(file) || setImage(file) || 
+        setHtml(file) || setWelcome(file) ||
+        setCss(file) || setScript(file))
     {
         std::cout << "Error Parsing: " << file << std::endl;
         exit(1);
@@ -59,10 +63,25 @@ std::string Parsing::getIndex() const
 std::vector<std::string> Parsing::getErrorPage() const
 {return (this->error_page);}
 
+std::vector<std::string> Parsing::getImage() const
+{return (this->image);}
+
+std::vector<std::string> Parsing::getHtml() const
+{return (this->html);}
+
+std::vector<std::string> Parsing::getWelcome() const
+{return (this->welcome);}
+
+std::vector<std::string> Parsing::getCss() const
+{return (this->css);}
+
+std::vector<std::string> Parsing::getScript() const
+{return (this->script);}
+
 int Parsing::setServerName(std::string file)
 {
     this->server_name = parseSoloElt(file, "server_name");
-    if (this->server_name == "-1")
+    if (this->server_name == "")
         return (1);
     return (0);
 }
@@ -70,43 +89,55 @@ int Parsing::setServerName(std::string file)
 int Parsing::setRoot(std::string file)
 {
     this->root = parseSoloElt(file, "root");
-    if (this->root == "-1")
+    if (this->root == "")
         return (1);
     return (0);
 }
 int Parsing::setIndex(std::string file)
 {
     this->index = parseSoloElt(file, "index");
-    if (this->index == "-1")
+    if (this->index == "")
         return (1);
     return (0);
 }
 int Parsing::setErrorPage(std::string file)
 {
-    std::string line;
-    std::ifstream fd(file.c_str());
-    while (getline(fd, line))
-    {
-        if (line.find("error_page") != std::string::npos)
-        {
-            getline(fd, line);
-            if (line.find("{") != std::string::npos)
-            {
-                while (getline(fd, line))
-                {
-                    if (line.find("}") != std::string::npos)
-                        return (0);
-                    else
-                        this->error_page.push_back(line);
-                }
-                return (1);
-            }
-            return (1);
-        }
-    }
-    fd.close();
-    std::cout << "Error: " << file  << ": not foud or no perm" << std::endl;
-    return (1);
+    this->error_page = parseMultiEltString(file, "error_page");
+    if (this->error_page.size() == 0)
+        return (1);
+    return (0);
+}
+
+int Parsing::setHtml(std::string file)
+{
+    this->html = parseMultiEltString(file, "Html");
+    if (this->html.size() == 0)
+        return (1);
+    return (0);
+}
+
+int Parsing::setWelcome(std::string file)
+{
+    this->welcome = parseMultiEltString(file, "welcome");
+    if (this->welcome.size() == 0)
+        return (1);
+    return (0);
+}
+
+int Parsing::setCss(std::string file)
+{
+    this->css = parseMultiEltString(file, "css");
+    if (this->css.size() == 0)
+        return (1);
+    return (0);
+}
+
+int Parsing::setScript(std::string file)
+{
+    this->script = parseMultiEltString(file, "script");
+    if (this->script.size() == 0)
+        return (1);
+    return (0);
 }
 
 int Parsing::setListen(std::string file)
@@ -137,6 +168,14 @@ int Parsing::setListen(std::string file)
     return (1);
 }
 
+int Parsing::setImage(std::string file)
+{
+    this->image = parseMultiEltString(file, "image");
+    if (this->image.size() == 0)
+        return (1);
+    return (0);
+}
+
 void Parsing::removeSpace(std::string &str)
 {
     int i = 0;
@@ -147,8 +186,12 @@ void Parsing::removeSpace(std::string &str)
         else
             i++;
     }
-    if (str[i - 1] == ';')
-        str.erase(i - 1, 1);
+    if (str[i - 1] != ';')
+    {
+        std::cout << "Parse error" << std::endl;
+        exit(1);
+    }
+    str.erase(i - 1, 1);
 }
 
 std::string Parsing::parseSoloElt(std::string file, std::string name)
@@ -168,11 +211,46 @@ std::string Parsing::parseSoloElt(std::string file, std::string name)
                 getline(fd, line);
                 if (line.find("}") != std::string::npos)
                     return (removeSpace(result), result);
-                return ("-1");
+                return ("");
             }
-            return ("-1");
+            return ("");
         }
     }
-    return ("-1");
+    return ("");
+}
+
+std::vector<std::string> Parsing::parseMultiEltString(std::string file, std::string name)
+{
+    std::vector<std::string> result;
+    std::string line;
+    std::ifstream fd(file.c_str());
+    while (getline(fd, line))
+    {
+        if (line.find(name) != std::string::npos)
+        {
+            getline(fd, line);
+            if (line.find("{") != std::string::npos)
+            {
+                while (getline(fd, line))
+                {
+                    if (line.find("}") != std::string::npos)
+                        return (result);
+                    else
+                    {
+                        if (name == "listen")
+                            result.push_back(line.c_str());
+                        else
+                        {
+                            removeSpace(line);
+                            result.push_back(line);
+                        }
+                    }
+                }
+                return std::vector<std::string>();
+            }
+            return std::vector<std::string>();
+        }
+    }
+    return std::vector<std::string>();
 }
 
