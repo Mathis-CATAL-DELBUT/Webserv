@@ -2,15 +2,68 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <title>Téléchargement de fichier</title>
+    <link rel="icon" href="image/w.webp">
+    <link rel="stylesheet" href="style.css">
+    <title>Uploader et Supprimer des fichiers</title>
 </head>
 <body>
-    <h1>Téléchargement de fichier</h1>
-    <form action="thank.html" method="post" enctype="multipart/form-data">
-        <label for="file">Sélectionnez un fichier :</label>
-        <input type="file" name="file" id="file">
+    <h1>Uploader et Supprimer des fichiers</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <label for="fileInput">Sélectionnez un fichier :</label>
+        <input type="file" id="fileInput" accept=".txt, .pdf, .jpg">
         <input type="submit" value="Envoyer">
     </form>
+
+    <h2>Liste des fichiers téléchargés :</h2>
+    <ul id="fileList"></ul>
+
+    <script>
+        // Fonction pour ajouter un fichier à la liste
+        function addFileToList(file) {
+            const fileList = document.getElementById('fileList');
+            const listItem = document.createElement('li');
+            listItem.textContent = file.name;
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Supprimer';
+            deleteButton.addEventListener('click', function() {
+                deleteFile(file.name);
+                listItem.remove();
+            });
+            listItem.appendChild(deleteButton);
+            fileList.appendChild(listItem);
+        }
+
+        // Fonction pour envoyer une requête DELETE au serveur
+        function deleteFile(fileName) {
+            fetch(`/delete-file?fileName=${fileName}`, {
+                method: 'DELETE',
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Le fichier a été supprimé avec succès côté serveur
+                    alert('Fichier supprimé avec succès');
+                } else {
+                    // Gérer les erreurs ici, par exemple, afficher un message d'erreur
+                    alert('Erreur lors de la suppression du fichier');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+            });
+        }
+
+        // Écouteur d'événements pour le formulaire de téléchargement
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Empêcher la soumission du formulaire par défaut
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0]; // Récupérer le fichier sélectionné
+            if (file) {
+                // Ajouter le fichier à la liste
+                addFileToList(file);
+                // Réinitialiser le champ de sélection de fichier
+                fileInput.value = '';
+            }
+        });
+    </script>
 </body>
 </html>
