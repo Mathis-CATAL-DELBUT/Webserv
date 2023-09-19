@@ -36,9 +36,8 @@ bool Webserv::init()
     _returnCode = setsockopt(_listenSd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on));
     if (_returnCode < 0)
         return (handlingErrorInit("setsockopt"));
-    _returnCode = ioctl(_listenSd, FIONBIO, (char*)&on);
-    if (_returnCode < 0)
-        return (handlingErrorInit("ioctl"));
+    int flags = fcntl(socket, F_GETFL, 0);
+    fcntl(socket, F_SETFL, flags | O_NONBLOCK);
 
     std::memset(&addr, 0, sizeof(addr));
     addr.sin6_family = AF_INET6;

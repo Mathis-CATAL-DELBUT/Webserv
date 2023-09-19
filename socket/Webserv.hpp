@@ -19,10 +19,10 @@
 #include <unordered_map>
 
 #include "Request.hpp"
-#include "Response.hpp"
+// #include "Response.hpp"
 
 class Request;
-class Response;
+// class Response;
 
 class Webserv
 {
@@ -48,7 +48,7 @@ class Webserv
         timeval _timeOut;
 
         Request _request;
-        Response _response;
+        // Response _response;
         void newConnHandling();
         void existingConnHandling(int currSd);
         void closeConn(int currSd);

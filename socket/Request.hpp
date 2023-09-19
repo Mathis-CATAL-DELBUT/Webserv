@@ -17,7 +17,7 @@
 #include <algorithm>
 #include <vector>
 
-# define BUFFER_SIZE 10000
+# define BUFFER_SIZE 1024
 # define GET 0
 # define POST 1
 # define DELETE 2
