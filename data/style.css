@@ -1,8 +1,8 @@
 
 body
 {
-    background-color: #000;
-    color: #fff;
+    background-color: #DAD7CD;
+    color: #588157;
     margin: 0;
     padding: 0;
     height: 100%;
@@ -17,19 +17,27 @@ body
 
 h1
 {
+    color: #344E41;
     text-align: center;
     font-size: 75px;
+    font-family: 'Croissant One', cursive;
 }
 
 a
 {
-    color: #8707a1;
-    text-decoration: none;
+    color: #588157;
+    font-family: 'Croissant One', cursive;
 }
 
 .lien-container
 {
+    display: flex;
     text-align: center;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    /* align-content: space-between; */
     font-size: 50px;
 }
 
@@ -104,4 +112,8 @@ a
     align-items: center;
     height: 15px;
 }
-  
+
+#map
+{
+    border-radius: 10px;
+}
