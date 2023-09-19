@@ -44,7 +44,7 @@ class Webserv
         int _endServ;
         int _closeConn;
         int _run;
-        fd_set _masterSet, _workingSet;
+        fd_set fds, rfds;
         timeval _timeOut;
 
         Request _request;

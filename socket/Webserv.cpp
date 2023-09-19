@@ -30,17 +30,16 @@ bool Webserv::init()
     sockaddr_in6 addr;
     int on = 1;
 
-   _listenSd = socket(AF_INET6, SOCK_STREAM, 0);
+   _listenSd = socket(AF_INET, SOCK_STREAM, 0);
     if (_listenSd < 0)
         return (handlingErrorInit("listen"));
     _returnCode = setsockopt(_listenSd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on));
     if (_returnCode < 0)
         return (handlingErrorInit("setsockopt"));
-    int flags = fcntl(socket, F_GETFL, 0);
-    fcntl(socket, F_SETFL, flags | O_NONBLOCK);
+   ioctl(_listenSd, FIONBIO, (char *)&on);
 
     std::memset(&addr, 0, sizeof(addr));
-    addr.sin6_family = AF_INET6;
+    addr.sin6_family = AF_INET;
     memcpy(&addr.sin6_addr, &in6addr_any, sizeof(in6addr_any));
     addr.sin6_port = htons(_serverPort);
     _returnCode = bind(_listenSd, (struct sockaddr *)&addr, sizeof(addr));
@@ -51,30 +50,28 @@ bool Webserv::init()
     if (_returnCode < 0)
         return (handlingErrorInit("listen"));
 
-    FD_ZERO(&_masterSet);
     _maxSd = _listenSd;
-    FD_SET(_listenSd, &_masterSet);
+    FD_ZERO(&fds);
+    FD_SET(_listenSd, &fds);
     return (1);
 }
 
 bool Webserv::process()
 {
-    while (!_endServ)
+    while (1)
     {
-        memcpy(&_workingSet, &_masterSet, sizeof(_masterSet));
+        rfds = fds;
         std::cout << "Waiting on select()..." << std::endl;
-        _returnCode = select(_maxSd + 1, &_workingSet, NULL, NULL, &_timeOut);
+        _returnCode = select(_maxSd + 1, &rfds, NULL, NULL, &_timeOut);
         if (_returnCode <= 0){
             std::cerr << (_returnCode < 0 ? "select() failed" : "select() timed out. End program") << std::endl;
             perror("select");
             break;
         }
-        _descReady = _returnCode;
-        for (int i = 0 ; i <= _maxSd && _descReady > 0 ; ++i)
+        for (int i = 0 ; i <= _maxSd ; i++)
         {
-            if (FD_ISSET(i, &_workingSet))
+            if (FD_ISSET(i, &rfds))
             {
-                _descReady -= 1;
                 if (i == _listenSd)
                     newConnHandling();
                 else
@@ -92,25 +89,20 @@ bool Webserv::process()
 
 void Webserv::newConnHandling()
 {
-    std::cout << "Listening socket is readable" << std::endl;
-    _newSd = 0;
-    while (_newSd != -1)
+    _newSd = accept(_listenSd, NULL, NULL);
+    if (_newSd < 0)
     {
-        _newSd = accept(_listenSd, NULL, NULL);
-        if (_newSd < 0)
+        if (errno != EWOULDBLOCK)
         {
-            if (errno != EWOULDBLOCK)
-            {
-                std::cerr << "accept() failed" << std::endl;
-                _endServ = true;
-            }
-            break ;
+            std::cerr << "accept() failed" << std::endl;
+            _endServ = true;
         }
-        std::cout << "New incoming connection " << _newSd << std::endl;
-        FD_SET(_newSd, &_masterSet);
-        if (_newSd > _maxSd)
-            _maxSd = _newSd;
+        return ;
     }
+    std::cout << "New incoming connection " << _newSd << std::endl;
+    FD_SET(_newSd, &fds);
+    if (_newSd > _maxSd)
+        _maxSd = _newSd;
 }
 void Webserv::closeConn(int currSd)
 {
@@ -126,18 +118,13 @@ void Webserv::closeConn(int currSd)
 
 void Webserv::existingConnHandling(int currSd)
 {
-    // int run = 1;
     std::cout << "Descriptor " << currSd << " is readable" << std::endl;
-    _closeConn = false;
-    while (true)
-    {
-        if (receiveRequest(currSd) == 0)
-            break;
-        if (sendResponse(currSd) == 0)
-            break;
-        if (_closeConn)
-            closeConn(currSd);
-    }
+    if (receiveRequest(currSd) == 0)
+        return ;
+    if (sendResponse(currSd) == 0)
+        break;
+    // if (_closeConn)
+    //     closeConn(currSd);
 }
 
 int Webserv::handlingErrorConn()
