@@ -36,7 +36,7 @@ bool Webserv::init()
     _returnCode = setsockopt(_listenSd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on));
     if (_returnCode < 0)
         return (handlingErrorInit("setsockopt"));
-    _returnCode = fcntl(_listenSd, F_SETFL, O_NONBLOCK);
+    _returnCode = ioctl(_listenSd, FIONBIO, (char *)&on);
     if (_returnCode < 0)
         return (handlingErrorInit("ioctl"));
 
@@ -95,7 +95,11 @@ void Webserv::newConnHandling()
    _newSd = accept(_listenSd, NULL, NULL);
     if (_newSd <= 0)
     {
-        strerror(errno);
+        if (errno != EWOULDBLOCK)
+        {
+            std::cerr << "accept() failed" << std::endl;
+            _endServ = true;
+        }
         return ;
     }
     std::cout << "New incoming connection " << _newSd << std::endl;
@@ -128,9 +132,19 @@ void Webserv::existingConnHandling(int currSd)
 int Webserv::handlingErrorConn()
 {
     if (_returnCode < 0)
-        strerror(errno);
+    {
+        if (errno != EWOULDBLOCK)
+        {
+            std::cerr << "recv() or send() failed" << std::endl;
+            _closeConn = true;
+        }
+        return _returnCode;
+    }
     if (_returnCode == 0)
+    {
         std::cerr << "Connection closed" << std::endl;
+        _closeConn = true;
+    }
     return _returnCode;
 }
 
