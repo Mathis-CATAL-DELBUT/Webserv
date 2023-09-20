@@ -13,26 +13,7 @@ Request &Request::operator=(Request const &rhs)
     return (*this);
 }
 
-// void Request::setMethod(int a)
-// {
-//     this->_method = a;
-// }
-// void Request::setStatusCode(int a)
-// {
-//     this->_statusCode = a;
-// }
-// void Request::setProtocol(std::string str)
-// {
-//     this->_protocol = str;
-// }
-// void Request::setRessourcePath(std::string str)
-// {
-//     this->_ressourcePath = str;
-// }
-// void Request::setContentType(std::string str)
-// {
-//     this->_contentType = str;
-// }
+
 void Request::setRawRequest(std::string str)
 {
     this->rawRequest = str;
@@ -77,9 +58,7 @@ void Request::requestTreatment(char *buffer)
 {
     std::string r(buffer);
     setRawRequest(r);
-    std::cout << "<<<<< CLIENT REQUEST >>>>>" << std::endl << std::endl;
-    for (int i = 0 ; i < r.size() ; i++)
-        std::cout << r;
+    std::cout << r;
     parsingFormat();
 }
 

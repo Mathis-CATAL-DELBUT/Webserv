@@ -30,16 +30,18 @@ bool Webserv::init()
     sockaddr_in6 addr;
     int on = 1;
 
-   _listenSd = socket(AF_INET, SOCK_STREAM, 0);
+   _listenSd = socket(AF_INET6, SOCK_STREAM, 0);
     if (_listenSd < 0)
         return (handlingErrorInit("listen"));
     _returnCode = setsockopt(_listenSd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on));
     if (_returnCode < 0)
         return (handlingErrorInit("setsockopt"));
-   ioctl(_listenSd, FIONBIO, (char *)&on);
+    _returnCode = fcntl(_listenSd, F_SETFL, O_NONBLOCK);
+    if (_returnCode < 0)
+        return (handlingErrorInit("ioctl"));
 
     std::memset(&addr, 0, sizeof(addr));
-    addr.sin6_family = AF_INET;
+    addr.sin6_family = AF_INET6;
     memcpy(&addr.sin6_addr, &in6addr_any, sizeof(in6addr_any));
     addr.sin6_port = htons(_serverPort);
     _returnCode = bind(_listenSd, (struct sockaddr *)&addr, sizeof(addr));
@@ -70,6 +72,7 @@ bool Webserv::process()
         }
         for (int i = 0 ; i <= _maxSd ; i++)
         {
+            std::cout << i << std::endl;
             if (FD_ISSET(i, &rfds))
             {
                 if (i == _listenSd)
@@ -81,7 +84,7 @@ bool Webserv::process()
     }
     for (int i = 0 ; i <= _maxSd ; i++)
     {
-        if (FD_ISSET(i, &_masterSet))
+        if (FD_ISSET(i, &fds))
             close(i);
     }
     return (1);
@@ -89,14 +92,10 @@ bool Webserv::process()
 
 void Webserv::newConnHandling()
 {
-    _newSd = accept(_listenSd, NULL, NULL);
-    if (_newSd < 0)
+   _newSd = accept(_listenSd, NULL, NULL);
+    if (_newSd <= 0)
     {
-        if (errno != EWOULDBLOCK)
-        {
-            std::cerr << "accept() failed" << std::endl;
-            _endServ = true;
-        }
+        strerror(errno);
         return ;
     }
     std::cout << "New incoming connection " << _newSd << std::endl;
@@ -104,47 +103,35 @@ void Webserv::newConnHandling()
     if (_newSd > _maxSd)
         _maxSd = _newSd;
 }
+
 void Webserv::closeConn(int currSd)
 {
     std::cout << "closing ! " << std::endl;
     close(currSd);
-    FD_CLR(currSd, &_masterSet);
+    FD_CLR(currSd, &fds);
     if (currSd == _maxSd)
     {
-        while (FD_ISSET(_maxSd, &_masterSet) == false)
+        while (FD_ISSET(_maxSd, &fds) == false)
             _maxSd -= 1;
     }
 }
 
 void Webserv::existingConnHandling(int currSd)
 {
-    std::cout << "Descriptor " << currSd << " is readable" << std::endl;
-    if (receiveRequest(currSd) == 0)
-        return ;
-    if (sendResponse(currSd) == 0)
-        break;
-    // if (_closeConn)
-    //     closeConn(currSd);
+   std::cout << "Descriptor " << currSd << " is readable" << std::endl;
+    if (receiveRequest(currSd) != 0)
+        sendResponse(currSd);
+    else
+        closeConn(currSd);
 }
 
 int Webserv::handlingErrorConn()
 {
     if (_returnCode < 0)
-    {
-        if (errno != EWOULDBLOCK)
-        {
-            std::cerr << "recv() or send() failed" << std::endl;
-            _closeConn = true;
-        }
-        return 0;
-    }
+        strerror(errno);
     if (_returnCode == 0)
-    {
         std::cerr << "Connection closed" << std::endl;
-        _closeConn = true;
-        return 0;
-    }
-    return 0;
+    return _returnCode;
 }
 
 int Webserv::receiveRequest(int currSd)
@@ -153,6 +140,7 @@ int Webserv::receiveRequest(int currSd)
     _returnCode = recv(currSd, bf, sizeof( bf), 0);
     if (_returnCode <= 0)
         return (handlingErrorConn());
+    bf[_returnCode] = 0;
     _request.requestTreatment(bf);
     return 1;
 }
@@ -161,23 +149,9 @@ int Webserv::receiveRequest(int currSd)
 int Webserv::sendResponse(int currSd)
 {
     this->_response.generateResponse(this->_request);
-    int rc = send(currSd, (this->_response.getResponse()).c_str(), this->_response.getContentLength(), 0);
+    int rc = send(currSd, (this->_response.getResponse()).c_str(), (this->_response.getResponse()).size(), 0);
     std::cout << "SENT" << std::endl;
     if (rc < 0)
         return (handlingErrorConn());
     return 1;
 }
-
-
-//      for (int i = 0; i <= _max_fd; ++i) {
-        //     if (FD_ISSET(i, &working_set_recv) && i == 0) {
-        //         if (userExit())
-        //             return(false);
-        //     }
-        //     else if (FD_ISSET(i, &working_set_recv) && isServerSocket(i)) 
-        //         acceptNewCnx(i);
-        //     else if (FD_ISSET(i, &working_set_recv) && _requests.count(i))
-        //         readRequest(i, *_requests[i]);
-        //     else if (FD_ISSET(i, &working_set_write) && _requests.count(i))
-        //         sendResponse(i, *_requests[i]); ->to analyse
-        // }

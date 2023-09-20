@@ -1,4 +1,4 @@
-#include "Webserv.hpp"
+#include "../Webserv.hpp"
 
 Webserv::Webserv() : _endServ(false), _serverPort(8080), _run(1)
 {
@@ -81,12 +81,12 @@ bool Webserv::process()
             }
         }  
     }
-    // for (int i = 0 ; i <= _maxSd ; i++)
-    // {
-    //     if (FD_ISSET(i, &_masterSet))
-    //         close(i);
-    // }
-    // return (1);
+    for (int i = 0 ; i <= _maxSd ; i++)
+    {
+        if (FD_ISSET(i, &fds))
+            close(i);
+    }
+    return (1);
     return 1;
 }
 
@@ -108,23 +108,26 @@ void Webserv::newConnHandling()
         _maxSd = _newSd;
 }
 
-// void Webserv::closeConn(int currSd)
-// {
-//     std::cout << "closing ! " << std::endl;
-//     close(currSd);
-//     FD_CLR(currSd, &_masterSet);
-//     if (currSd == _maxSd)
-//     {
-//         while (FD_ISSET(_maxSd, &_masterSet) == false)
-//             _maxSd -= 1;
-//     }
-// }
+void Webserv::closeConn(int currSd)
+{
+    std::cout << "closing ! " << std::endl;
+    close(currSd);
+    FD_CLR(currSd, &fds);
+    if (currSd == _maxSd)
+    {
+        while (FD_ISSET(_maxSd, &fds) == false)
+            _maxSd -= 1;
+    }
+}
 
 void Webserv::existingConnHandling(int currSd)
 {
    std::cout << "Descriptor " << currSd << " is readable" << std::endl;
     if (receiveRequest(currSd) == 0)
-        return ;
+    {
+        if (_closeConn)
+            closeConn(currSd);
+    }
     if (sendResponse(currSd) == 0)
         return ;
     // if (_closeConn)

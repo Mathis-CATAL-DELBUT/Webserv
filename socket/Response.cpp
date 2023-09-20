@@ -20,10 +20,10 @@ void Response::generateResponse(Request &request)
     addingFormat(request);
 
     //print data from request and response built
-    std::cout << "EXTENSION = " << request.getExtension() << std::endl;
-    std::cout << "ressource = " << request.getRessource() << std::endl;
-    std::cout << "PATH = " << this->_pathToContent << std::endl;
-    std::cout << this->_response << std::endl;
+    // std::cout << "EXTENSION = " << request.getExtension() << std::endl;
+    // std::cout << "ressource = " << request.getRessource() << std::endl;
+    // std::cout << "PATH = " << this->_pathToContent << std::endl;
+    // std::cout << this->_response << std::endl;
 }
 
 void Response::configHeader(Request &request)
@@ -44,7 +44,7 @@ void Response::configBody(Request &request)
         {"css", "text"}
     };
     this->_contentType = map[this->_modifExtension];
-    this->_contentLength = this->_response.length();
+    this->_contentLength = this->_rawContent.length();
 }
 
 void Response::buildingFormattedResponse()
