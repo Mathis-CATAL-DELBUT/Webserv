@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:51 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/09/15 10:43:35 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/09/21 11:34:55 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,9 @@ std::vector<std::string> Parsing::getCss() const
 
 std::vector<std::string> Parsing::getScript() const
 {return (this->script);}
+
+const std::string&	getDefaultErrorPage(const std::string& error_code) const 
+{return (this->default_error[error_code]);}
 
 int Parsing::setServerName(std::string file)
 {
@@ -175,6 +178,12 @@ int Parsing::setImage(std::string file)
         return (1);
     return (0);
 }
+
+void	Parsing::setDefaultErrorPage()
+{
+	default_error["404"] = "";
+}
+
 
 void Parsing::removeSpace(std::string &str)
 {

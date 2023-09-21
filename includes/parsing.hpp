@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:59 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/09/15 10:29:48 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/09/21 11:33:51 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ class Parsing
         std::vector<std::string> getWelcome() const;
         std::vector<std::string> getCss() const;
         std::vector<std::string> getScript() const;
+		const std::string&		 getDefaultErrorPage(const std::string& error_code) const;
         
     private:
         std::vector<int> listen;
@@ -48,6 +49,7 @@ class Parsing
         std::string server_name;
         std::string root;
         std::string index;
+		std::map<std::string, std::string>	default_error;
 
         int setListen(std::string file);
         int setServerName(std::string file);
@@ -59,6 +61,7 @@ class Parsing
         int setWelcome(std::string file);
         int setCss(std::string file);
         int setScript(std::string file);
+		void	setDefaultErrorPage();
 
         void removeSpace(std::string &str);
         std::string  parseSoloElt(std::string file, std::string name);
