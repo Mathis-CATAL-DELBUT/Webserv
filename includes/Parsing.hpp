@@ -1,15 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parsing.hpp                                        :+:      :+:    :+:   */
+/*   Parsing.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:59 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/09/21 11:33:51 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/09/21 12:00:00 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#ifndef PARSING_HPP
+#define PARSING_HPP
 #include <iostream>
 #include <string>
 #include <vector>
@@ -17,6 +19,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <cstdlib>
+#include <map>
 
 class Parsing
 {
@@ -37,6 +40,7 @@ class Parsing
         std::vector<std::string> getCss() const;
         std::vector<std::string> getScript() const;
 		const std::string&		 getDefaultErrorPage(const std::string& error_code) const;
+		const std::string&		 getExtension(const std::string& extension) const;
         
     private:
         std::vector<int> listen;
@@ -50,6 +54,7 @@ class Parsing
         std::string root;
         std::string index;
 		std::map<std::string, std::string>	default_error;
+		std::map<std::string, std::string>	file_extension;
 
         int setListen(std::string file);
         int setServerName(std::string file);
@@ -62,8 +67,11 @@ class Parsing
         int setCss(std::string file);
         int setScript(std::string file);
 		void	setDefaultErrorPage();
+		void	setExtension();
 
         void removeSpace(std::string &str);
         std::string  parseSoloElt(std::string file, std::string name);
         std::vector<std::string> parseMultiEltString(std::string file, std::string name);
 };
+
+#endif

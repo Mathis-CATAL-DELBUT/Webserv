@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parsing.cpp                                        :+:      :+:    :+:   */
+/*   Parsing.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:51 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/09/21 11:34:55 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/09/21 11:59:31 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parsing.hpp"
+#include "Parsing.hpp"
 
 Parsing::Parsing(std::string file)
 {
@@ -78,8 +78,11 @@ std::vector<std::string> Parsing::getCss() const
 std::vector<std::string> Parsing::getScript() const
 {return (this->script);}
 
-const std::string&	getDefaultErrorPage(const std::string& error_code) const 
-{return (this->default_error[error_code]);}
+const std::string&	Parsing::getDefaultErrorPage(const std::string& error_code) const 
+{return (default_error[error_code]);}
+
+const std::string&	Parsing::getExtension(const std::string& extension) const 
+{return (file_extension[extension]);}
 
 int Parsing::setServerName(std::string file)
 {
@@ -182,6 +185,10 @@ int Parsing::setImage(std::string file)
 void	Parsing::setDefaultErrorPage()
 {
 	default_error["404"] = "";
+}
+
+void	Parsing::setExtension() {
+	file_extension["jpg"] = "image/jpeg";
 }
 
 
