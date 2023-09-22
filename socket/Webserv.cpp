@@ -36,10 +36,9 @@ bool Webserv::init()
     _returnCode = setsockopt(_listenSd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on));
     if (_returnCode < 0)
         return (handlingErrorInit("setsockopt"));
-    _returnCode = ioctl(_listenSd, FIONBIO, (char *)&on);
+    _returnCode = fcntl(_listenSd, F_SETFL, O_NONBLOCK);
     if (_returnCode < 0)
-        return (handlingErrorInit("ioctl"));
-
+        return (handlingErrorInit("fcntl"));
     std::memset(&addr, 0, sizeof(addr));
     addr.sin6_family = AF_INET6;
     memcpy(&addr.sin6_addr, &in6addr_any, sizeof(in6addr_any));
@@ -55,24 +54,26 @@ bool Webserv::init()
     _maxSd = _listenSd;
     FD_ZERO(&fds);
     FD_SET(_listenSd, &fds);
+    _endServ = false;
     return (1);
 }
 
 bool Webserv::process()
 {
-    while (1)
+    while (!_endServ)
     {
         rfds = fds;
-        std::cout << "Waiting on select()..." << std::endl;
+        for (int i = 3 ; i <= _maxSd ; i++)
+            std::cout << "Watched by select : " << i << std::endl;
+        std::cout << "Waiting on select()..." << std::endl << std::endl;
         _returnCode = select(_maxSd + 1, &rfds, NULL, NULL, &_timeOut);
         if (_returnCode <= 0){
             std::cerr << (_returnCode < 0 ? "select() failed" : "select() timed out. End program") << std::endl;
-            perror("select");
+            strerror(errno);
             break;
         }
         for (int i = 0 ; i <= _maxSd ; i++)
         {
-            std::cout << i << std::endl;
             if (FD_ISSET(i, &rfds))
             {
                 if (i == _listenSd)
@@ -80,7 +81,8 @@ bool Webserv::process()
                 else
                     existingConnHandling(i);
             }
-        }  
+        }
+        std::cout << "______________________________" << std::endl << std::endl;
     }
     for (int i = 0 ; i <= _maxSd ; i++)
     {
@@ -95,11 +97,8 @@ void Webserv::newConnHandling()
    _newSd = accept(_listenSd, NULL, NULL);
     if (_newSd <= 0)
     {
-        if (errno != EWOULDBLOCK)
-        {
-            std::cerr << "accept() failed" << std::endl;
-            _endServ = true;
-        }
+        strerror(errno);
+        _endServ = true;
         return ;
     }
     std::cout << "New incoming connection " << _newSd << std::endl;
@@ -110,7 +109,7 @@ void Webserv::newConnHandling()
 
 void Webserv::closeConn(int currSd)
 {
-    std::cout << "closing ! " << std::endl;
+    std::cout << "Connection " << currSd << " closed" << std::endl;
     close(currSd);
     FD_CLR(currSd, &fds);
     if (currSd == _maxSd)
@@ -122,7 +121,7 @@ void Webserv::closeConn(int currSd)
 
 void Webserv::existingConnHandling(int currSd)
 {
-   std::cout << "Descriptor " << currSd << " is readable" << std::endl;
+   std::cout << "Socket client " << currSd << " is about to be red" << std::endl;
     if (receiveRequest(currSd) != 0)
         sendResponse(currSd);
     else
@@ -131,20 +130,8 @@ void Webserv::existingConnHandling(int currSd)
 
 int Webserv::handlingErrorConn()
 {
-    if (_returnCode < 0)
-    {
-        if (errno != EWOULDBLOCK)
-        {
-            std::cerr << "recv() or send() failed" << std::endl;
-            _closeConn = true;
-        }
-        return _returnCode;
-    }
-    if (_returnCode == 0)
-    {
-        std::cerr << "Connection closed" << std::endl;
-        _closeConn = true;
-    }
+    if (_returnCode == -1)
+        strerror(errno);
     return _returnCode;
 }
 
@@ -153,19 +140,23 @@ int Webserv::receiveRequest(int currSd)
     char bf[BUFFER_SIZE];
     _returnCode = recv(currSd, bf, sizeof( bf), 0);
     if (_returnCode <= 0)
-        return (handlingErrorConn());
+    {
+        if (_returnCode == -1)
+            strerror(errno);
+        return _returnCode;
+    }
     bf[_returnCode] = 0;
     _request.requestTreatment(bf);
     return 1;
 }
 
 
-int Webserv::sendResponse(int currSd)
+void Webserv::sendResponse(int currSd)
 {
     this->_response.generateResponse(this->_request);
     int rc = send(currSd, (this->_response.getResponse()).c_str(), (this->_response.getResponse()).size(), 0);
-    std::cout << "SENT" << std::endl;
+    std::cout << "Response sent for " << this->_request.getRessource() << std::endl;
     if (rc < 0)
-        return (handlingErrorConn());
-    return 1;
+        strerror(errno);
+
 }

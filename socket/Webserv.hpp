@@ -55,7 +55,7 @@ class Webserv
         void closeConn(int currSd);
         int receiveRequest(int currSd);
         
-        int sendResponse(int currSd);
+        void sendResponse(int currSd);
         std::string formating(std::string content);
 
         int handlingErrorConn();
