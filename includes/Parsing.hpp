@@ -6,7 +6,7 @@
 /*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:59 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/09/21 12:00:00 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/09/24 17:30:02 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,14 +33,14 @@ class Parsing
         std::string getServerName() const;
         std::string getRoot() const;
         std::string getIndex() const;
-        std::vector<std::string> getErrorPage() const;
+        std::vector<std::string> getErrorPage();
         std::vector<std::string> getImage() const;
         std::vector<std::string> getHtml() const;
         std::vector<std::string> getWelcome() const;
         std::vector<std::string> getCss() const;
         std::vector<std::string> getScript() const;
-		const std::string&		 getDefaultErrorPage(const std::string& error_code) const;
-		const std::string&		 getExtension(const std::string& extension) const;
+		const std::string&		 getDefaultErrorPage(const std::string& error_code);
+		const std::string&		 getExtension(const std::string& extension);
         
     private:
         std::vector<int> listen;

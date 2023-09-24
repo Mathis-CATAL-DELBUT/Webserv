@@ -6,7 +6,7 @@
 /*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:51 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/09/21 11:59:31 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/09/24 16:02:13 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ Parsing::Parsing(std::string file)
         std::cout << "Error Parsing: " << file << std::endl;
         exit(1);
     }
+	setExtension();
+	setDefaultErrorPage();
 }
 
 Parsing::~Parsing(){}
@@ -60,7 +62,7 @@ std::string Parsing::getRoot() const
 std::string Parsing::getIndex() const
 {return (this->index);}
 
-std::vector<std::string> Parsing::getErrorPage() const
+std::vector<std::string> Parsing::getErrorPage()
 {return (this->error_page);}
 
 std::vector<std::string> Parsing::getImage() const
@@ -78,11 +80,15 @@ std::vector<std::string> Parsing::getCss() const
 std::vector<std::string> Parsing::getScript() const
 {return (this->script);}
 
-const std::string&	Parsing::getDefaultErrorPage(const std::string& error_code) const 
-{return (default_error[error_code]);}
+const std::string&	Parsing::getDefaultErrorPage(const std::string& error_code) 
+{	
+	return (default_error[error_code]);
+}
 
-const std::string&	Parsing::getExtension(const std::string& extension) const 
-{return (file_extension[extension]);}
+const std::string&	Parsing::getExtension(const std::string& extension) 
+{
+	return (file_extension[extension]);
+}
 
 int Parsing::setServerName(std::string file)
 {
@@ -189,6 +195,7 @@ void	Parsing::setDefaultErrorPage()
 
 void	Parsing::setExtension() {
 	file_extension["jpg"] = "image/jpeg";
+	file_extension["html"] = "text/html";
 }
 
 
