@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parsing.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:51 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/09/24 16:02:13 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/09/25 16:16:17 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,6 +196,8 @@ void	Parsing::setDefaultErrorPage()
 void	Parsing::setExtension() {
 	file_extension["jpg"] = "image/jpeg";
 	file_extension["html"] = "text/html";
+    file_extension["css"] = "text/css";
+    file_extension["js"] = "text/javascript";
 }
 
 
