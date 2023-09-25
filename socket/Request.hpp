@@ -25,13 +25,10 @@
 class Request
 {
     public:
-        Request();
+        Request(char *bf);
         Request(Request const &copy);
         ~Request();
         Request &operator=(Request const &rhs);
-
-        void requestTreatment(char *request);
-        void setRawRequest(std::string str);
 
         int getMethod() const;
         int getStatusCode() const;
@@ -52,6 +49,7 @@ class Request
 
         void parsingFormat();
         std::string infile(std::string str, char c);
+        Request();
         // void statutLineParsing();
         // void headerParsing();
         // void bodyParsing();

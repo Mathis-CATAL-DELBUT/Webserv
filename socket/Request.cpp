@@ -1,8 +1,14 @@
 #include "Request.hpp"
 
-Request::Request() {}
+Request::Request(char *buffer) 
+{
+    std::string r(buffer);
+    this->rawRequest = r;
+    parsingFormat();
+}
 
-Request::~Request() {}
+Request::~Request() 
+{}
 
 Request::Request(Request const &copy) {}
 
@@ -11,12 +17,6 @@ Request &Request::operator=(Request const &rhs)
     if (this == &rhs)
         return (*this);
     return (*this);
-}
-
-
-void Request::setRawRequest(std::string str)
-{
-    this->rawRequest = str;
 }
 
 int Request::getMethod() const
@@ -52,14 +52,6 @@ std::string Request::getRawRequest() const
 std::string Request::getExtension() const
 {
     return (this->_extension);
-}
-
-void Request::requestTreatment(char *buffer)
-{
-    std::string r(buffer);
-    setRawRequest(r);
-    // std::cout << r;
-    parsingFormat();
 }
 
 std::string Request::infile(std::string str, char c)

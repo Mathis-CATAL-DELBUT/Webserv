@@ -1,8 +1,8 @@
 #include "Webserv.hpp"
 
-Webserv::Webserv() : _endServ(false), _serverPort(8080), _run(1)
+Webserv::Webserv() : _endServ(false), _serverPort(8080)
 {
-    _timeOut.tv_sec = 3 * 60;
+    _timeOut.tv_sec = 180;
     _timeOut.tv_usec = 0;
 }
 
@@ -52,21 +52,24 @@ bool Webserv::init()
         return (handlingErrorInit("listen"));
 
     _maxSd = _listenSd;
-    FD_ZERO(&fds);
-    FD_SET(_listenSd, &fds);
     _endServ = false;
+    FD_ZERO(&rfds);
+    FD_SET(_listenSd, &rfds);
+    FD_ZERO(&wfds);
+    FD_ZERO(&rtmp);
+    FD_ZERO(&wtmp);
     return (1);
 }
-
 bool Webserv::process()
 {
     while (!_endServ)
     {
-        rfds = fds;
+        rtmp = rfds;
+        wtmp = wfds;
         for (int i = 3 ; i <= _maxSd ; i++)
-            std::cout << "Watched by select : " << i << std::endl;
+            std::cout << "Watched by select : " << i << (clientS.count(i) ? " -> client socket" : " -> server socket") << std::endl;
         std::cout << "Waiting on select()..." << std::endl << std::endl;
-        _returnCode = select(_maxSd + 1, &rfds, NULL, NULL, &_timeOut);
+        _returnCode = select(_maxSd + 1, &rtmp, &wtmp, NULL, &_timeOut);
         if (_returnCode <= 0){
             std::cerr << (_returnCode < 0 ? "select() failed" : "select() timed out. End program") << std::endl;
             strerror(errno);
@@ -74,19 +77,16 @@ bool Webserv::process()
         }
         for (int i = 0 ; i <= _maxSd ; i++)
         {
-            if (FD_ISSET(i, &rfds))
-            {
-                if (i == _listenSd)
-                    newConnHandling();
-                else
-                    existingConnHandling(i);
-            }
+            if (FD_ISSET(i, &rtmp) && i == _listenSd)
+                newConnHandling();
+            else
+                existingConnHandling(i);
         }
         std::cout << "______________________________" << std::endl << std::endl;
     }
     for (int i = 0 ; i <= _maxSd ; i++)
     {
-        if (FD_ISSET(i, &fds))
+        if (FD_ISSET(i, &rfds))
             close(i);
     }
     return (1);
@@ -102,7 +102,7 @@ void Webserv::newConnHandling()
         return ;
     }
     std::cout << "New incoming connection " << _newSd << std::endl;
-    FD_SET(_newSd, &fds);
+    FD_SET(_newSd, &rfds);
     if (_newSd > _maxSd)
         _maxSd = _newSd;
 }
@@ -111,21 +111,31 @@ void Webserv::closeConn(int currSd)
 {
     std::cout << "Connection " << currSd << " closed" << std::endl;
     close(currSd);
-    FD_CLR(currSd, &fds);
+    FD_CLR(currSd, &rfds);
+    delete clientS[currSd].first;
+    delete clientS[currSd].second;
+    clientS[currSd].first = NULL;
+    clientS[currSd].second = NULL;
     if (currSd == _maxSd)
     {
-        while (FD_ISSET(_maxSd, &fds) == false)
+        while (FD_ISSET(_maxSd, &rfds) == false)
             _maxSd -= 1;
     }
 }
 
 void Webserv::existingConnHandling(int currSd)
 {
-   std::cout << "Socket client " << currSd << " is about to be red" << std::endl;
-    if (receiveRequest(currSd) != 0)
+    if (FD_ISSET(currSd, &rtmp))
+    {
+        std::cout << "Socket client " << currSd << " has data to be red" << std::endl;
+        if (receiveRequest(currSd) == 0)
+            closeConn(currSd);
+    }
+    else if (FD_ISSET(currSd, &wtmp) && clientS.count(currSd))
+    {
+        std::cout << "Socket client " << currSd << " has data to be sent" << std::endl;
         sendResponse(currSd);
-    else
-        closeConn(currSd);
+    }
 }
 
 int Webserv::handlingErrorConn()
@@ -137,6 +147,7 @@ int Webserv::handlingErrorConn()
 
 int Webserv::receiveRequest(int currSd)
 {
+    std::cout << "Receiving . . ." << std::endl;
     char bf[BUFFER_SIZE];
     _returnCode = recv(currSd, bf, sizeof( bf), 0);
     if (_returnCode <= 0)
@@ -146,17 +157,25 @@ int Webserv::receiveRequest(int currSd)
         return _returnCode;
     }
     bf[_returnCode] = 0;
-    _request.requestTreatment(bf);
+    clientS[currSd] = std::make_pair(new Request(bf), new Response());
+    FD_CLR(currSd, &rfds);
+    FD_SET(currSd, &wfds);
     return 1;
 }
 
 
 void Webserv::sendResponse(int currSd)
 {
-    this->_response.generateResponse(this->_request);
-    int rc = send(currSd, (this->_response.getResponse()).c_str(), (this->_response.getResponse()).size(), 0);
-    std::cout << "Response sent for " << this->_request.getRessource() << std::endl;
+    std::cout << "Sending . . ." << std::endl;
+    (clientS[currSd].second)->generateResponse(*(clientS[currSd]).first);
+    int rc = send(currSd, (clientS[currSd].second->getResponse()).c_str(), (clientS[currSd].second->getResponse()).size(), 0);
+    std::cout << "Response sent for " << clientS[currSd].first->getRessource() << std::endl;
     if (rc < 0)
         strerror(errno);
-
+    FD_CLR(currSd, &wfds);
+    delete clientS[currSd].first;
+    delete clientS[currSd].second;
+    clientS[currSd].first = NULL;
+    clientS[currSd].second = NULL;
+    FD_SET(currSd, &rfds);
 }

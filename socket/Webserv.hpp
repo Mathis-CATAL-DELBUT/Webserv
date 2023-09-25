@@ -16,7 +16,7 @@
 #include <fstream>
 #include <algorithm>
 #include <vector>
-#include <unordered_map>
+#include <map>
 #include <fcntl.h>
 
 #include "Request.hpp"
@@ -44,12 +44,11 @@ class Webserv
         int _descReady;
         int _endServ;
         int _closeConn;
-        int _run;
-        fd_set fds, rfds;
+        fd_set rtmp, wtmp, rfds, wfds;
         timeval _timeOut;
 
-        Request _request;
         Response _response;
+        std::map<int, std::pair<Request*, Response*>> clientS;
         void newConnHandling();
         void existingConnHandling(int currSd);
         void closeConn(int currSd);
