@@ -1,16 +1,8 @@
 #include "Webserv.hpp"
 
-Webserv::Webserv() : _endServ(false), _serverPort(8080), _run(1)
-{
-    _timeOut.tv_sec = 3 * 60;
-    _timeOut.tv_usec = 0;
-}
-
-Webserv::Webserv(Parsing* config) : _endServ(false), _serverPort(8080), _run(1)
+Webserv::Webserv(Parsing* config) : _endServ(false), _serverPort(8080)
 {
     _config = config;
-    _timeOut.tv_sec = 3 * 60;
-    _timeOut.tv_usec = 0;
 }
 
 Webserv::~Webserv() {}
@@ -35,63 +27,70 @@ int Webserv::handlingErrorInit(std::string function)
 bool Webserv::init()
 {
     sockaddr_in6 addr;
-    int on = 1;
+    int rc, on = 1;
 
    _listenSd = socket(AF_INET6, SOCK_STREAM, 0);
     if (_listenSd < 0)
         return (handlingErrorInit("listen"));
-    _returnCode = setsockopt(_listenSd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on));
-    if (_returnCode < 0)
+    rc = setsockopt(_listenSd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on));
+    if (rc < 0)
         return (handlingErrorInit("setsockopt"));
-    _returnCode = ioctl(_listenSd, FIONBIO, (char *)&on);
-    if (_returnCode < 0)
-        return (handlingErrorInit("ioctl"));
-
+    rc = fcntl(_listenSd, F_SETFL, O_NONBLOCK);
+    if (rc < 0)
+        return (handlingErrorInit("fcntl"));
     std::memset(&addr, 0, sizeof(addr));
     addr.sin6_family = AF_INET6;
     memcpy(&addr.sin6_addr, &in6addr_any, sizeof(in6addr_any));
     addr.sin6_port = htons(_serverPort);
-    _returnCode = bind(_listenSd, (struct sockaddr *)&addr, sizeof(addr));
-    if (_returnCode < 0)
+    rc = bind(_listenSd, (struct sockaddr *)&addr, sizeof(addr));
+    if (rc < 0)
         return (handlingErrorInit("bind"));
 
-    _returnCode = listen(_listenSd, 32);
-    if (_returnCode < 0)
+    rc = listen(_listenSd, 32);
+    if (rc < 0)
         return (handlingErrorInit("listen"));
 
     _maxSd = _listenSd;
-    FD_ZERO(&fds);
-    FD_SET(_listenSd, &fds);
+    _endServ = false;
+    FD_ZERO(&rfds);
+    FD_SET(_listenSd, &rfds);
+    FD_ZERO(&wfds);
+    FD_ZERO(&rtmp);
+    FD_ZERO(&wtmp);
     return (1);
 }
-
 bool Webserv::process()
 {
-    while (1)
+    int rc;
+    timeval timeout;
+    timeout.tv_sec = 3 * 60;
+    timeout.tv_usec = 0;
+
+    while (!_endServ)
     {
-        rfds = fds;
-        std::cout << "Waiting on select()..." << std::endl;
-        _returnCode = select(_maxSd + 1, &rfds, NULL, NULL, &_timeOut);
-        if (_returnCode <= 0){
-            std::cerr << (_returnCode < 0 ? "select() failed" : "select() timed out. End program") << std::endl;
-            perror("select");
+        rtmp = rfds;
+        wtmp = wfds;
+        for (int i = _listenSd ; i <= _maxSd ; i++)
+            std::cout <<  i << (i != _listenSd ? " -> client socket" : " -> server socket") << std::endl;
+        std::cout << std::endl << "Waiting on select()..." << std::endl << std::endl;
+        rc = select(_maxSd + 1, &rtmp, &wtmp, NULL, &timeout);
+        if (rc <= 0){
+            std::cerr << (rc < 0 ? "select() failed" : "select() timed out. End program") << std::endl;
+            strerror(errno);
             break;
         }
         for (int i = 0 ; i <= _maxSd ; i++)
         {
-            std::cout << i << std::endl;
-            if (FD_ISSET(i, &rfds))
-            {
-                if (i == _listenSd)
-                    newConnHandling();
-                else
-                    existingConnHandling(i);
-            }
-        }  
+            if (FD_ISSET(i, &rtmp) && i == _listenSd)
+                newConnHandling();
+            else
+                existingConnHandling(i);
+        }
+        std::cout << "______________________________" << std::endl << std::endl;
     }
     for (int i = 0 ; i <= _maxSd ; i++)
     {
-        if (FD_ISSET(i, &fds))
+        if (FD_ISSET(i, &rfds))
             close(i);
     }
     return (1);
@@ -99,70 +98,67 @@ bool Webserv::process()
 
 void Webserv::newConnHandling()
 {
-   _newSd = accept(_listenSd, NULL, NULL);
-    if (_newSd <= 0)
+    int newSd;
+
+    newSd = accept(_listenSd, NULL, NULL);
+    if (newSd <= 0)
     {
-        if (errno != EWOULDBLOCK)
-        {
-            std::cerr << "accept() failed" << std::endl;
-            _endServ = true;
-        }
+        strerror(errno);
+        _endServ = true;
         return ;
     }
-    std::cout << "New incoming connection " << _newSd << std::endl;
-    FD_SET(_newSd, &fds);
-    if (_newSd > _maxSd)
-        _maxSd = _newSd;
+    std::cout << "New incoming connection " << newSd << std::endl;
+    FD_SET(newSd, &rfds);
+    if (newSd > _maxSd)
+        _maxSd = newSd;
 }
 
 void Webserv::closeConn(int currSd)
 {
-    std::cout << "closing ! " << std::endl;
+    std::cout << "Connection " << currSd << " closed" << std::endl;
     close(currSd);
-    FD_CLR(currSd, &fds);
+    FD_CLR(currSd, &rfds);
+    delete clientS[currSd].first;
+    delete clientS[currSd].second;
+    clientS[currSd].first = NULL;
+    clientS[currSd].second = NULL;
     if (currSd == _maxSd)
     {
-        while (FD_ISSET(_maxSd, &fds) == false)
+        while (FD_ISSET(_maxSd, &rfds) == false)
             _maxSd -= 1;
     }
 }
 
 void Webserv::existingConnHandling(int currSd)
 {
-   std::cout << "Descriptor " << currSd << " is readable" << std::endl;
-    if (receiveRequest(currSd) != 0)
+    if (FD_ISSET(currSd, &rtmp))
+    {
+        std::cout << "Socket client " << currSd << " has data to be red" << std::endl;
+        if (receiveRequest(currSd) == 0)
+            closeConn(currSd);
+    }
+    else if (FD_ISSET(currSd, &wtmp) && clientS.count(currSd))
+    {
+        std::cout << "Socket client " << currSd << " has data to be sent" << std::endl;
         sendResponse(currSd);
-    else
-        closeConn(currSd);
-}
-
-int Webserv::handlingErrorConn()
-{
-    if (_returnCode < 0)
-    {
-        if (errno != EWOULDBLOCK)
-        {
-            std::cerr << "recv() or send() failed" << std::endl;
-            _closeConn = true;
-        }
-        return _returnCode;
     }
-    if (_returnCode == 0)
-    {
-        std::cerr << "Connection closed" << std::endl;
-        _closeConn = true;
-    }
-    return _returnCode;
 }
 
 int Webserv::receiveRequest(int currSd)
 {
+    std::cout << "Receiving . . ." << std::endl;
     char bf[BUFFER_SIZE];
-    _returnCode = recv(currSd, bf, sizeof( bf), 0);
-    if (_returnCode <= 0)
-        return (handlingErrorConn());
-    bf[_returnCode] = 0;
-    _request = new Request(std::string(bf));
+    int rc = recv(currSd, bf, sizeof( bf), 0);
+    if (rc <= 0)
+    {
+        if (rc == -1)
+            strerror(errno);
+        return rc;
+    }
+    bf[rc] = 0;
+    clientS[currSd] = std::make_pair(new Request(std::string(bf)), new Response());
+    FD_CLR(currSd, &rfds);
+    FD_SET(currSd, &wfds);
     return 1;
 }
 
@@ -183,12 +179,18 @@ Response*	Webserv::handle_request(Parsing *config, Request *req) {
 }
 
 
-int Webserv::sendResponse(int currSd)
+void Webserv::sendResponse(int currSd)
 {
-    this->_response = handle_request(_config, _request);
-    int rc = send(currSd, (this->_response->getResponse()).c_str(), (this->_response->getResponse()).size(), 0);
-    std::cout << "SENT" << std::endl;
+    std::cout << "Sending . . ." << std::endl;
+    clientS[currSd].second = handle_request(_config, clientS[currSd].first);
+    int rc = send(currSd, (clientS[currSd].second->getResponse()).c_str(), (clientS[currSd].second->getResponse()).size(), 0);
+    std::cout << "Response sent for " << clientS[currSd].first->getValue("File") << std::endl;
     if (rc < 0)
-        return (handlingErrorConn());
-    return 1;
+        strerror(errno); //a modifier pour retourner erreur si il ya
+    FD_CLR(currSd, &wfds);
+    delete clientS[currSd].first;
+    delete clientS[currSd].second;
+    clientS[currSd].first = NULL;
+    clientS[currSd].second = NULL;
+    FD_SET(currSd, &rfds);
 }

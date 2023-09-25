@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ale-sain <ale-sain@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/18 10:34:30 by tedelin           #+#    #+#             */
-/*   Updated: 2023/09/25 18:04:40 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/09/25 19:10:11 by ale-sain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@
 
 class Response {
 	public:
+		Response();
 		Response(Parsing* i_config, Request* i_request);
 		~Response();
 		Response(const Response& cpy);
@@ -57,8 +58,8 @@ class Response {
 		Parsing*	config;
 		Request*	request;
 		
-	private:
-		Response();
+	// private:
+	// 	Response();
 };
 
 #endif

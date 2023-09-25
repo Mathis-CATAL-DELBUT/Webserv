@@ -18,6 +18,7 @@
 #include <vector>
 #include <unordered_map>
 #include <fcntl.h>
+#include <map>
 
 #include "Request.hpp"
 #include "Response.hpp"
@@ -35,7 +36,6 @@ class Response;
 class Webserv
 {
     public:
-        Webserv();
         Webserv(Parsing* config);
         Webserv(Webserv const &copy);
         ~Webserv();
@@ -44,32 +44,21 @@ class Webserv
         bool process();
 
     private:
-        int _listenSd;
-        int _maxSd;
-        int _returnCode;
+        int _listenSd, _maxSd;
         int _serverPort;
-        int _newSd;
-        int _descReady;
-        int _endServ;
-        int _closeConn;
-        int _run;
-        fd_set fds, rfds;
-        timeval _timeOut;
-
-        Request* _request;
-        Response* _response;
+        bool _endServ, _closeConn;
+        fd_set rtmp, wtmp, rfds, wfds;
         Parsing* _config;
+        std::map<int, std::pair<Request*, Response*>> clientS;
+
+        Webserv();
         void newConnHandling();
         void existingConnHandling(int currSd);
-        void closeConn(int currSd);
         int receiveRequest(int currSd);
-        Response*	handle_request(Parsing *config, Request *req);
-        
-        int sendResponse(int currSd);
-        std::string formating(std::string content);
-
-        int handlingErrorConn();
+        void sendResponse(int currSd);
+        void closeConn(int currSd);
         int handlingErrorInit(std::string function);
+        Response*	handle_request(Parsing *config, Request *req);
 };
 
 #endif
