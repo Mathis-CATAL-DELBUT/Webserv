@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ale-sain <ale-sain@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 14:41:32 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/09/25 16:06:50 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/09/27 13:22:04 by ale-sain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,9 @@ int main(int argc, char **argv)
     Parsing* config = new Parsing(argv[1]);
 
     Webserv ws(config);
-    if (ws.init() == false)
+    if (ws.initAllServ() == false)
         return 0;
-    if (ws.process() == false)
+    if (ws.processAllServ() == false)
         return 0;
 
     // Affichage des données parsées
