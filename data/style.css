@@ -1,0 +1,119 @@
+
+body
+{
+    background-color: #DAD7CD;
+    color: #588157;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: auto;
+}
+
+.cat
+{
+    overflow: hidden;
+    z-index: -1;
+}
+
+h1
+{
+    color: #344E41;
+    text-align: center;
+    font-size: 75px;
+    font-family: 'Croissant One', cursive;
+}
+
+a
+{
+    color: #588157;
+    font-family: 'Croissant One', cursive;
+}
+
+.lien-container
+{
+    display: flex;
+    text-align: center;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    /* align-content: space-between; */
+    font-size: 50px;
+}
+
+.img_container
+{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tete
+{
+    width: 200px;
+    height: 200px;
+  border-radius: 50%;
+}
+
+#norminet
+{
+    position: relative;
+}
+
+.mot-apparait 
+{
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+  
+.mot-hover:hover + .mot-apparait 
+{
+    opacity: 1;
+}
+
+#browser
+{
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #959595;
+    border: 3px solid #ccc;
+    border-radius: 10px;
+}
+
+.go_back
+{
+    position: relative;
+    color : #000;
+    padding: 5px;
+    background-color: #FFF;
+    border: 3px solid #818181;
+    border-radius: 10px;
+    z-index: 1;
+}
+
+.go_back:hover
+{
+    background-color: #818181;
+}
+
+.centered-container 
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#go_back_browser
+{
+    display: inline-block;
+    justify-content: center;
+    align-items: center;
+    height: 15px;
+}
+
+#map
+{
+    border-radius: 10px;
+}
