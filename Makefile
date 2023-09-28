@@ -1,6 +1,7 @@
+NAME = WebServer
 NAME = WebServe
 CC = c++
-CFLAGS = -g # -Wall -Wextra -Werror -std=c++98
+CFLAGS = -g3 # -Wall -Wextra -Werror -std=c++98
 
 
 #===============================================================================#
@@ -58,6 +59,7 @@ all: project $(NAME) $(HDR_NAME)
 
 project:
 	@echo "$(BLUE)====================================$(RESET)"
+	@echo "\n\t[ $(BLUE)$(BOLD)~~~~ WebServ ~~~~$(RESET)]\n"
 	@echo "\n\t[ $(BLUE)$(BOLD)~~~~ WebServ ~~~~$(RESET)]\n"
 
 

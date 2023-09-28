@@ -6,7 +6,7 @@
 /*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/18 10:34:30 by tedelin           #+#    #+#             */
-/*   Updated: 2023/09/26 14:47:52 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/09/28 14:10:58 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,8 @@ class Response {
 		Parsing*	config;
 		Request*	request;
 		
-	// private:
-	// 	Response();
+	private:
+		Response();
 };
 
 #endif
