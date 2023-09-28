@@ -6,7 +6,7 @@
 /*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 15:33:33 by tedelin           #+#    #+#             */
-/*   Updated: 2023/09/25 18:23:30 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/09/28 11:03:30 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,23 +18,8 @@ Response::Response(Parsing* i_config, Request* i_request) : config(i_config), re
 	status = 200;
 	connection = request->getValue("Connection");
 	body = "";
-	if (request->getValue("File").find("CGI") != std::string::npos) {
-		char **env = NULL;
-        char **av = NULL;
-        unlink(".CGI.txt");
-        pid_t child_pid = fork();
-        if (child_pid == 0) 
-        {
-            if (execve("data/CGI/date.js", av, env) == -1)
-				std::cout << "pk" << std::endl;
-        }
-		waitpid(child_pid, NULL, 0);
-		std::string filePath = ".CGI.txt";
-        body = getFileContent(filePath);
-		std::cout << "body:" << body << std::endl;
-		content_type = "text/html";
-		content_length = body.size();
-	}
+	if (request->getValue("File").find("CGI") != std::string::npos)
+		doCGI(request);
 	else
 		content_type = config->getExtension(&(request->getValue("File"))[request->getValue("File").find(".") + 1]);
 	content_length = 0;
@@ -50,6 +35,24 @@ Response&	Response::operator=(const Response& rhs) {
 	if (this != &rhs) {
 	}
 	return (*this);
+}
+
+void	Response::doCGI(Request* request)
+{
+	char **env = NULL;
+	char **av = NULL;
+	unlink("data/CGI/.CGI.txt");
+	pid_t child_pid = fork();
+	if (child_pid == 0) 
+		execve(("data" + std::string(request->getValue("File"))).c_str(), av, env);
+	waitpid(child_pid, NULL, 0);
+	std::fstream file("data/CGI/.CGI.txt");
+	std::string line;
+	getline(file, line);
+	std::string filePath = "data/CGI/.CGI.txt";
+	body = getFileContent(filePath);
+	content_type = "text/html";
+	content_length = body.size();
 }
 
 std::string Response::getDate() {

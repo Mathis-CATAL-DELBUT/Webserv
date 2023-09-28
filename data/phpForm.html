@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Formulaire d'âge</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Formulaire d'âge</h1>
+    <form action="../CGI/age.php" method="POST">
+        <label for="nom">Nom : </label>
+        <input type="text" id="nom" name="nom" required><br>
+        
+        <label for="prenom">Prénom : </label>
+        <input type="text" id="prenom" name="prenom" required><br>
+        
+        <label for="age">Âge : </label>
+        <input type="number" id="age" name="age" required><br>
+
+        <input type="submit" value="Envoyer">
+    </form>
+</body>
+</html>
