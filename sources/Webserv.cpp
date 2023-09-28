@@ -1,6 +1,6 @@
 #include "Webserv.hpp"
 
-Webserv::Webserv(Parsing* config) : _endServ(false), ports({8080, 8081}), _timeout(false)
+Webserv::Webserv(Parsing* config) : _endServ(false), ports(config->getListen()), _timeout(false)
 {
     _config = config;
     FD_ZERO(&rfds);
@@ -208,7 +208,7 @@ int Webserv::receiveRequest(int currSd)
         allbytes += rc;
     }
     std::cout << "All data received : " << allbytes << " bytes" << std::endl;
-
+    std::cout << req << std::endl;
     clientS[currSd] = std::make_pair(new Request(req), new Response());
     FD_CLR(currSd, &rfds);
     FD_SET(currSd, &wfds);
