@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parsing.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:51 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/09/25 16:16:17 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/09/28 14:20:18 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,7 +190,13 @@ int Parsing::setImage(std::string file)
 
 void	Parsing::setDefaultErrorPage()
 {
-	default_error["404"] = "";
+	default_error["404"] = "<html><head><title>404 Not Found</title></head><body><center><h1>404 Not Found</h1></center><hr><center>Webserv</center></body></html>";
+	default_error["403"] = "<html><head><title>403 Forbidden</title></head><body><center><h1>403 Forbidden</h1></center><hr><center>Webserv</center></body></html>";
+	default_error["400"] = "<html><head><title>400 Bad Request</title></head><body><center><h1>400 Bad Request</h1></center><hr><center>Webserv</center></body></html>";
+	default_error["405"] = "<html><head><title>405 Method Not Allowed</title></head><body><center><h1>405 Method Not Allowed</h1></center><hr><center>Webserv</center></body></html>";
+	default_error["500"] = "<html><head><title>500 Internal Server Error</title></head><body><center><h1>500 Internal Server Error</h1></center><hr><center>Webserv</center></body></html>";
+	default_error["501"] = "<html><head><title>501 Not Implemented</title></head><body><center><h1>501 Not Implemented</h1></center><hr><center>Webserv</center></body></html>";
+	default_error["505"] = "<html><head><title>505 HTTP Version Not Supported</title></head><body><center><h1>505 HTTP Version Not Supported</h1></center><hr><center>Webserv</center></body></html>";
 }
 
 void	Parsing::setExtension() {
@@ -198,6 +204,24 @@ void	Parsing::setExtension() {
 	file_extension["html"] = "text/html";
     file_extension["css"] = "text/css";
     file_extension["js"] = "text/javascript";
+	file_extension["webp"] = "image/webp";
+	file_extension["png"] = "image/png";
+	file_extension["ico"] = "image/x-icon";
+	file_extension["gif"] = "image/gif";
+	file_extension["svg"] = "image/svg+xml";
+	file_extension["mp4"] = "video/mp4";
+	file_extension["mp3"] = "audio/mpeg";
+	file_extension["wav"] = "audio/wav";
+	file_extension["ogg"] = "audio/ogg";
+	file_extension["txt"] = "text/plain";
+	file_extension["pdf"] = "application/pdf";
+	file_extension["zip"] = "application/zip";
+	file_extension["tar"] = "application/x-tar";
+	file_extension["gz"] = "application/gzip";
+	file_extension["rar"] = "application/x-rar-compressed";
+	file_extension["7z"] = "application/x-7z-compressed";
+	file_extension["json"] = "application/json";
+	file_extension["xml"] = "application/xml";
 }
 
 
