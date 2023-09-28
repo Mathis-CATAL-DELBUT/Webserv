@@ -3,10 +3,13 @@ body
 {
     background-color: #DAD7CD;
     color: #588157;
+    background-color: #DAD7CD;
+    color: #588157;
     margin: 0;
     padding: 0;
     height: 100%;
     overflow: auto;
+    text-align: center;
 }
 
 .cat
@@ -21,10 +24,13 @@ h1
     text-align: center;
     font-size: 75px;
     font-family: 'Croissant One', cursive;
+    font-family: 'Croissant One', cursive;
 }
 
 a
 {
+    color: #588157;
+    font-family: 'Croissant One', cursive;
     color: #588157;
     font-family: 'Croissant One', cursive;
 }
@@ -32,7 +38,13 @@ a
 .lien-container
 {
     display: flex;
+    display: flex;
     text-align: center;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    /* align-content: space-between; */
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: space-around;
@@ -112,7 +124,10 @@ a
     align-items: center;
     height: 15px;
 }
-
+#map
+{
+    border-radius: 10px;
+}
 #map
 {
     border-radius: 10px;

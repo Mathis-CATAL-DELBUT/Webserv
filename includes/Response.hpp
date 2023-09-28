@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-sain <ale-sain@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/18 10:34:30 by tedelin           #+#    #+#             */
-/*   Updated: 2023/09/25 19:10:11 by ale-sain         ###   ########.fr       */
+/*   Updated: 2023/09/28 14:17:16 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ class Response {
 		void				setBody(const std::string& file_path);
 		void				sendHeaderError();
 		std::string			convertInt(int value);
+		void				doCGI(Request* request);
 		// bool				checkHeaderError(const std::string& method);
 		
 		int status;
@@ -57,9 +58,6 @@ class Response {
 		
 		Parsing*	config;
 		Request*	request;
-		
-	// private:
-	// 	Response();
 };
 
 #endif
