@@ -44,13 +44,27 @@ a
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
-    /* align-content: space-between; */
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
-    /* align-content: space-between; */
-    font-size: 50px;
+    font-size: 35px;
+}
+
+.lien-container_game
+{
+    display: flex;
+    display: flex;
+    text-align: center;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    font-size: 75px;
 }
 
 .img_container
@@ -123,10 +137,6 @@ a
     justify-content: center;
     align-items: center;
     height: 15px;
-}
-#map
-{
-    border-radius: 10px;
 }
 #map
 {

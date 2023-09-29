@@ -6,11 +6,12 @@
 /*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 15:33:33 by tedelin           #+#    #+#             */
-/*   Updated: 2023/09/29 13:21:35 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/09/29 13:38:25 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
+#include "Request.hpp"
 
 Response::Response() {}
 

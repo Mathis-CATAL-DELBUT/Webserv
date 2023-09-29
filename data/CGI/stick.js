@@ -75,6 +75,7 @@ const sticksContainer = document.getElementById('sticks-container');
             if (sticksLeft === 0) {
                 message.textContent = `Le Joueur ${currentPlayer} a perdu !`;
                 canRemoveSticks = false;
+                resetButton.style.display = 'inline';
             } else {
                 currentPlayer = (currentPlayer === 1) ? 2 : 1;
                 message.textContent = `Joueur ${currentPlayer}, c'est à vous !`;

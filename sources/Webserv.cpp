@@ -1,6 +1,6 @@
 #include "Webserv.hpp"
 
-Webserv::Webserv(Parsing* config) : _endServ(false), ports({8080, 8081}), _timeout(false)
+Webserv::Webserv(Parsing* config) : _endServ(false), ports(config->getListen()), _timeout(false)
 {
     _config = config;
     FD_ZERO(&rfds);
@@ -208,7 +208,7 @@ int Webserv::receiveRequest(int currSd)
         allbytes += rc;
     }
     std::cout << "All data received : " << allbytes << " bytes" << std::endl;
-
+    std::cout << req << std::endl;
     clientS[currSd] = std::make_pair(new Request(req), new Response());
     FD_CLR(currSd, &rfds);
     FD_SET(currSd, &wfds);
@@ -236,8 +236,6 @@ void Webserv::sendResponse(int currSd)
 {
     std::cout << "Sending . . ." << std::endl;
     clientS[currSd].second = handle_request(_config, clientS[currSd].first);
-    std::cout << "<<<<<<<<<>>>>>>>>" << clientS[currSd].second->getResponse() << std::endl;
-    // clientS[currSd].second->content_length = 229;
     int rc = send(currSd, (clientS[currSd].second->getResponse()).c_str(), (clientS[currSd].second->getResponse()).size(), 0);
     std::cout << "Response sent for " << clientS[currSd].first->getValue("File") << std::endl;
     if (rc < 0)
