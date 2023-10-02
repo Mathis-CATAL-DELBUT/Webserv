@@ -59,7 +59,6 @@ all: project $(NAME) $(HDR_NAME)
 project:
 	@echo "$(BLUE)====================================$(RESET)"
 	@echo "\n\t[ $(BLUE)$(BOLD)~~~~ WebServ ~~~~$(RESET)]\n"
-	@echo "\n\t[ $(BLUE)$(BOLD)~~~~ WebServ ~~~~$(RESET)]\n"
 
 
 $(OBJS_PATH):

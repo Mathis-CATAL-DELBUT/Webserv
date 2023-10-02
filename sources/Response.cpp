@@ -6,11 +6,12 @@
 /*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 15:33:33 by tedelin           #+#    #+#             */
-/*   Updated: 2023/09/28 14:12:17 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/09/29 13:38:25 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
+#include "Request.hpp"
 
 Response::Response() {}
 
@@ -21,8 +22,10 @@ Response::Response(Parsing* i_config, Request* i_request) : config(i_config), re
 	if (request->getValue("File").find("CGI") != std::string::npos)
 		doCGI(request);
 	else
+	{
 		content_type = config->getExtension(&(request->getValue("File"))[request->getValue("File").find(".") + 1]);
-	content_length = 0;
+		content_length = 0;
+	}
 	if (content_type == "")
 		status = 415;
 }
@@ -47,8 +50,6 @@ void	Response::doCGI(Request* request)
 		execve(("data" + std::string(request->getValue("File"))).c_str(), av, env);
 	waitpid(child_pid, NULL, 0);
 	std::fstream file("data/CGI/.CGI.txt");
-	std::string line;
-	getline(file, line);
 	std::string filePath = "data/CGI/.CGI.txt";
 	body = getFileContent(filePath);
 	content_type = "text/html";
@@ -100,6 +101,8 @@ void	Response::checkFile(const std::string& file_path) {
 }
 
 int	Response::getFileLength(std::ifstream& file) {
+	if (body != "")
+		return (body.size());
 	return (file.tellg());
 }
 
@@ -135,7 +138,6 @@ void	Response::setBody(const std::string& file_path) {
 		content_length = body.size();
 		content_type = "text/html";
 	}
-	
 }
 
 std::string Response::getResponse() {
