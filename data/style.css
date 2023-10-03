@@ -1,8 +1,4 @@
-
-body
-{
-    background-color: #DAD7CD;
-    color: #588157;
+body {
     background-color: #DAD7CD;
     color: #588157;
     margin: 0;
@@ -12,79 +8,84 @@ body
     text-align: center;
 }
 
-.cat
-{
+.cat {
     overflow: hidden;
     z-index: -1;
 }
 
-h1
-{
+h1 {
     color: #344E41;
     text-align: center;
     font-size: 75px;
     font-family: 'Croissant One', cursive;
-    font-family: 'Croissant One', cursive;
 }
 
-a
-{
-    color: #588157;
-    font-family: 'Croissant One', cursive;
+a {
     color: #588157;
     font-family: 'Croissant One', cursive;
 }
 
-.lien-container
-{
+.lien-container {
     display: flex;
-    display: flex;
-    text-align: center;
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
-    /* align-content: space-between; */
-    flex-wrap: wrap;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    /* align-content: space-between; */
-    font-size: 50px;
+    font-size: 35px;
 }
 
-.img_container
-{
+.lien-container_game {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    font-size: 75px;
+}
+
+.img_container {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.tete
-{
+.tete {
     width: 200px;
     height: 200px;
-  border-radius: 50%;
+    border-radius: 50%;
 }
 
-#norminet
-{
+/* #norminet {
+    position: relative;
+} */
+
+.norminet {
+    display: flex;
+    align-items: center;
     position: relative;
 }
 
-.mot-apparait 
-{
-    opacity: 0;
-    transition: opacity 0.5s ease;
+.norminet .mot-hover {
+    margin: 0 auto;
+    text-align: center;
 }
-  
-.mot-hover:hover + .mot-apparait 
-{
+
+.norminet .mot-apparait {
+    position: absolute;
+    top: 0;
+    left: 100%; /* Place "Miaouuu" à droite de "Norminet" */
+    margin-left: 50px; /* Ajustez l'espacement entre "Norminet" et "Miaouuu" */
+    opacity: 0;
+    transition: opacity 0.5s ease, left 0.5s ease;
+}
+
+.norminet:hover .mot-apparait {
+    left: calc(70%); /* Ajustez l'espacement entre "Norminet" et "Miaouuu" */
     opacity: 1;
 }
 
-#browser
-{
+
+#browser {
     max-width: 400px;
     margin: 0 auto;
     padding: 20px;
@@ -93,10 +94,9 @@ a
     border-radius: 10px;
 }
 
-.go_back
-{
+.go_back {
     position: relative;
-    color : #000;
+    color: #000;
     padding: 5px;
     background-color: #FFF;
     border: 3px solid #818181;
@@ -104,31 +104,24 @@ a
     z-index: 1;
 }
 
-.go_back:hover
-{
+.go_back:hover {
     background-color: #818181;
 }
 
-.centered-container 
-{
+.centered-container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
 }
 
-#go_back_browser
-{
+#go_back_browser {
     display: inline-block;
     justify-content: center;
     align-items: center;
     height: 15px;
 }
-#map
-{
-    border-radius: 10px;
-}
-#map
-{
+
+#map {
     border-radius: 10px;
 }

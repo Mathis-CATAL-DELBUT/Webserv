@@ -1,23 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Duel des Bâtonnets</title>
-    <link rel="stylesheet" href="../style.css">
-    <meta charset="UTF-8">
-</head>
-<body>
-    <h1>Duel des Bâtonnets</h1>
-    <p>Chacun leur tour, les joueurs peuvent retirer 1, 2 ou 3 bâtonnets. Celui qui prend le dernier bâtonnet perd le duel.</p>
-    <div id="sticks-container">
-        <!-- Insérez ici les bâtonnets -->
-    </div>
-    <button id="startButton">Commencer le Duel</button>
-    <p id="message"></p>
-    <button id="removeButton" disabled>Valider</button>
-    <button id="resetButton" style="display: none; text-align: center;">Rejouer</button>
-</body>
-<script>
-    const sticksContainer = document.getElementById('sticks-container');
+const sticksContainer = document.getElementById('sticks-container');
     const startButton = document.getElementById('startButton');
     const message = document.getElementById('message');
     const removeButton = document.getElementById('removeButton');
@@ -94,6 +75,7 @@
             if (sticksLeft === 0) {
                 message.textContent = `Le Joueur ${currentPlayer} a perdu !`;
                 canRemoveSticks = false;
+                resetButton.style.display = 'inline';
             } else {
                 currentPlayer = (currentPlayer === 1) ? 2 : 1;
                 message.textContent = `Joueur ${currentPlayer}, c'est à vous !`;
@@ -108,26 +90,3 @@
     resetButton.addEventListener('click', function() {
         location.reload();
     });
-</script>
-<style>
-    .stick {
-        width: 20px;
-        height: 100px;
-        background: #999;
-        display: inline-block;
-        margin: 5px;
-    }
-
-    .stick.selected {
-        background: #ff0000; /* Couleur rouge pour les bâtonnets sélectionnés */
-    }
-
-    .player-1-turn .stick.selected {
-        background: #ff0000; /* Rouge pour le Joueur 1 */
-    }
-
-    .player-2-turn .stick.selected {
-        background: #0000ff; /* Bleu pour le Joueur 2 */
-    }
-</style>
-</html>
