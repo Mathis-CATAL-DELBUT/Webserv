@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parsing.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-sain <ale-sain@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:59 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/10/03 14:52:00 by ale-sain         ###   ########.fr       */
+/*   Updated: 2023/09/24 17:30:02 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ class Parsing
 		const std::string&		 getExtension(const std::string& extension);
         
     private:
-        int fd;
         std::vector<int> listen;
         std::vector<std::string> error_page;  
         std::vector<std::string> image;  

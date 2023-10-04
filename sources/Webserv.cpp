@@ -78,7 +78,7 @@ bool Webserv::processAllServ()
 
     while (!_endServ)
     {
-        timeout.tv_sec = 30;
+        timeout.tv_sec = 20;
         timeout.tv_usec = 0;
         rtmp = rfds;
         wtmp = wfds;
@@ -95,21 +95,21 @@ bool Webserv::processAllServ()
         }
         std::cout << std::endl << "Waiting on select()..." << std::endl << std::endl;
         rc = select(_maxSd + 1, &rtmp, &wtmp, NULL, &timeout);
-        if (rc < 0){
+        if (rc <= 0){
             std::cerr << "select() failed. End program" << std::endl;
             strerror(errno);
             break;
         }
-        if (rc == 0)
-        {
-            if (!this->_timeout)
-            {
-                this->_timeout = true; // + action
-                std::cout << "Timeout !" << std::endl;
-            }
-        }
-        else
-            this->_timeout = false;
+        // if (rc == 0)
+        // {
+        //     if (!this->_timeout)
+        //     {
+        //         this->_timeout = true; // + action
+        //         std::cout << "Timeout !" << std::endl;
+        //     }
+        // }
+        // else
+        //     this->_timeout = false;
         for (int i = 0 ; i <= _maxSd ; i++)
         {
             if (FD_ISSET(i, &rtmp) && this->serverS.count(i))
