@@ -78,7 +78,7 @@ bool Webserv::processAllServ()
 
     while (!_endServ)
     {
-        timeout.tv_sec = 3 * 60;
+        timeout.tv_sec = 30;
         timeout.tv_usec = 0;
         rtmp = rfds;
         wtmp = wfds;
@@ -235,6 +235,7 @@ Response*	Webserv::handle_request(Parsing *config, Request *req) {
 void Webserv::sendResponse(int currSd)
 {
     std::cout << "Sending . . ." << std::endl;
+    delete clientS[currSd].second;
     clientS[currSd].second = handle_request(_config, clientS[currSd].first);
     int rc = send(currSd, (clientS[currSd].second->getResponse()).c_str(), (clientS[currSd].second->getResponse()).size(), 0);
     std::cout << "Response sent for " << clientS[currSd].first->getValue("File") << std::endl;

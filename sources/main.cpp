@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ale-sain <ale-sain@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 14:41:32 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/09/28 14:11:45 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/10/03 14:41:58 by ale-sain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,11 @@ int main(int argc, char **argv)
 
     Webserv ws(config);
     if (ws.initAllServ() == false)
-        return 0;
+     return delete config, 0;
     if (ws.processAllServ() == false)
-        return 0;
-
+        return delete config, 0;
+    delete config;
+    
     // Affichage des données parsées
     // for (int i = 0; p.getListen()[i] ; i++)
     //     std::cout << "listen: '" << p.getListen()[i] << "'" << std::endl;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parsing.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ale-sain <ale-sain@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:51 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/09/28 14:20:18 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/10/03 14:53:30 by ale-sain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 
 Parsing::Parsing(std::string file)
 {
-    if (open(file.c_str(), O_RDONLY) != 3)
+    this->fd = open(file.c_str(), O_RDONLY);
+    if (this->fd != 3)
     {
         std::cout << "Error: " << file  << ": not foud or no perm" << std::endl;
         exit(1);
@@ -32,7 +33,10 @@ Parsing::Parsing(std::string file)
 	setDefaultErrorPage();
 }
 
-Parsing::~Parsing(){}
+Parsing::~Parsing()
+{
+    close(this->fd);
+}
 
 Parsing::Parsing(const Parsing &copy)
 {*this = copy;}
