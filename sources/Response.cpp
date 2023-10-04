@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ale-sain <ale-sain@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 15:33:33 by tedelin           #+#    #+#             */
-/*   Updated: 2023/09/29 13:38:25 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/10/04 12:01:24 by ale-sain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@ Response::Response(Parsing* i_config, Request* i_request) : config(i_config), re
 	status = 200;
 	connection = request->getValue("Connection");
 	body = "";
-	if (request->getValue("File").find("CGI") != std::string::npos)
+	if (request->getValue("File").find("CGI") != std::string::npos
+		&& (request->getValue("File").find("php") != std::string::npos || request->getValue("File").find("py") != std::string::npos))
 		doCGI(request);
 	else
 	{
