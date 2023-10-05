@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parsing.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:51 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/09/28 14:20:18 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/10/04 15:11:03 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,10 @@
 
 Parsing::Parsing(std::string file)
 {
-    if (open(file.c_str(), O_RDONLY) != 3)
-    {
-        std::cout << "Error: " << file  << ": not foud or no perm" << std::endl;
+    std::ifstream infile(file);
+
+    if (!infile.is_open()) {
+        std::cout << "Error: " << file << ": not found or no permission" << std::endl;
         exit(1);
     }
     if (setListen(file) || setServerName(file) || 
