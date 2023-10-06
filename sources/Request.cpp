@@ -6,7 +6,7 @@
 /*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/18 14:20:02 by tedelin           #+#    #+#             */
-/*   Updated: 2023/09/24 17:30:33 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/10/04 11:32:13 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,28 +15,54 @@
 Request::Request() {}
 
 Request::Request(const std::string& s_request) {
+	std::string line;
+	std::istringstream iss(s_request);
 	size_t i = 0;
-	while (s_request[i] != '\0') {
+	while (getline(iss, line)) {
 		if (i == 0 ) {
-			size_t pos = s_request.find(' ', i);
-			size_t pos_end = s_request.find(' ', pos + 1);
-			_data["Method"] = s_request.substr(i, pos);
-			_data["File"] = s_request.substr(pos + 1, pos_end - pos - 1);
-			i = s_request.find('\n', i) + 1;
+			size_t pos = line.find(' ');
+			size_t pos_end = line.find(' ', pos + 1);
+			_data["Method"] = line.substr(0, pos);
+			_data["File"] = line.substr(pos + 1, pos_end - pos - 1);
 		}
-		else if (s_request.find(':', i) != std::string::npos) { 
-			size_t pos = s_request.find(':', i);
-			size_t line_end = s_request.find('\n', i);
-			if (line_end == std::string::npos)
-				line_end = s_request.size();
-			std::string key = s_request.substr(i, pos - i);
-			_data[key] = s_request.substr(pos + 2, line_end - pos - 2);
-			i = line_end + 1;
+		if (line.find("boundary=") != std::string::npos) {
+			size_t pos = line.find('=');
+			_data["boundary"] = line.substr(pos + 1, line.size() - pos - 2);
 		}
-		else
-			break;
+		else if (line.find(':') != std::string::npos) { 
+			size_t pos = line.find(':');
+			std::string key = line.substr(0, pos);
+			_data[key] = line.substr(pos + 2, line.size() - pos - 3);
+		}
+		else if (line.size() == 1) {
+			getline(iss, line);
+			if (_data["boundary"] != "" && line.find(_data["boundary"]) != std::string::npos) {
+				getline(iss, line);
+				while (getline(iss, line)) {
+					if (line.size() == 1) {
+						while (getline(iss, line)) {
+							if (line == "--" + _data["boundary"] + "--\r") {
+								break;
+							}
+							_data["Body"] += line;
+						}
+						break;
+					} else {
+						size_t pos = line.find(':');
+						std::string key = line.substr(0, pos);
+						_data["file_" + key] = line.substr(pos + 2, line.size() - pos - 3);
+					}
+				}
+			}
+			else {
+				_data["form"] = line;
+			}
+		}
+		i++;
 	}
+	display();
 }
+
 
 Request::Request(const Request& cpy) {
 	*this = cpy;

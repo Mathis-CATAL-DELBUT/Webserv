@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/18 10:34:30 by tedelin           #+#    #+#             */
-/*   Updated: 2023/09/29 13:38:44 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/10/05 13:56:52 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <wait.h>
+#include <unistd.h>
+#include <cstring>
 
 class Response {
 	public:
@@ -45,7 +47,9 @@ class Response {
 		void				setBody(const std::string& file_path);
 		void				sendHeaderError();
 		std::string			convertInt(int value);
-		void				doCGI(Request* request);
+		void				doCGI();
+		pid_t				write_stdin(int *fd_in, int *fd_out);
+		pid_t				exec_script(int *fd_in, int *fd_out);
 		// bool				checkHeaderError(const std::string& method);
 		
 		int status;
