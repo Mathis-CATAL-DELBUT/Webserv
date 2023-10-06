@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mcatal-d <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/18 10:34:30 by tedelin           #+#    #+#             */
-/*   Updated: 2023/10/05 13:56:52 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/10/06 11:57:41 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 #include "Parsing.hpp"
 #include <stdio.h>
 #include <stdlib.h>
-#include <wait.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <cstring>
 
