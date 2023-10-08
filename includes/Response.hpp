@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatal-d <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/18 10:34:30 by tedelin           #+#    #+#             */
-/*   Updated: 2023/10/06 11:57:41 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/10/07 16:43:56 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ class Response {
 		void				doCGI();
 		pid_t				write_stdin(int *fd_in, int *fd_out);
 		pid_t				exec_script(int *fd_in, int *fd_out);
+		void				upload_file();
 		// bool				checkHeaderError(const std::string& method);
 		
 		int status;

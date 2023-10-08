@@ -6,7 +6,7 @@
 /*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 15:33:33 by tedelin           #+#    #+#             */
-/*   Updated: 2023/10/05 14:01:38 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/10/07 16:53:58 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,15 @@ Response::Response(Parsing* i_config, Request* i_request) : config(i_config), re
 	status = 200;
 	connection = request->getValue("Connection");
 	body = "";
-	if (request->getValue("File").find("CGI") != std::string::npos)
-		doCGI();
+	if (request->getValue("File").find("CGI") != std::string::npos) {
+		upload_file();
+		// if (request->getValue("boudary") != "") {
+		// 	upload_file();
+		// }
+		// else {
+		// 	doCGI();
+		// }
+	}
 	else
 	{
 		content_type = config->getExtension(&(request->getValue("File"))[request->getValue("File").find(".") + 1]);
@@ -38,6 +45,14 @@ Response&	Response::operator=(const Response& rhs) {
 	if (this != &rhs) {
 	}
 	return (*this);
+}
+
+void	Response::upload_file() {
+	std::string file_path = config->getRoot() + request->getValue("File") + "/" + request->getValue("file_name");
+	std::cout << "PATH:" << file_path << std::endl;
+	std::ofstream file(file_path.c_str());
+	file << request->getValue("Body");
+	file.close();
 }
 
 pid_t Response::write_stdin(int *fd_in, int *fd_out) {

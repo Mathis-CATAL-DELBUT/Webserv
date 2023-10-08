@@ -6,7 +6,7 @@
 /*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/18 14:20:02 by tedelin           #+#    #+#             */
-/*   Updated: 2023/10/04 11:32:13 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/10/07 16:41:33 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ Request::Request(const std::string& s_request) {
 		else if (line.size() == 1) {
 			getline(iss, line);
 			if (_data["boundary"] != "" && line.find(_data["boundary"]) != std::string::npos) {
-				getline(iss, line);
 				while (getline(iss, line)) {
 					if (line.size() == 1) {
 						while (getline(iss, line)) {
@@ -51,6 +50,11 @@ Request::Request(const std::string& s_request) {
 						size_t pos = line.find(':');
 						std::string key = line.substr(0, pos);
 						_data["file_" + key] = line.substr(pos + 2, line.size() - pos - 3);
+						size_t file_name_pos = line.find("filename=");
+						if (file_name_pos != std::string::npos) {
+							size_t end = line.find("\"", file_name_pos + 10);
+							_data["file_name"] = line.substr(file_name_pos + 10, end - file_name_pos - 10);
+						}
 					}
 				}
 			}
