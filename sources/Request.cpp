@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ale-sain <ale-sain@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/18 14:20:02 by tedelin           #+#    #+#             */
-/*   Updated: 2023/10/07 16:41:33 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/10/09 17:09:35 by ale-sain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ Request::Request(const std::string& s_request) {
 		}
 		i++;
 	}
-	display();
+	// display();
 }
 
 

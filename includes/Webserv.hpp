@@ -54,9 +54,11 @@ class Webserv
         std::map<int, std::pair<Request*, Response*>> clientS;
         std::vector<int> ports;
         std::map<int, int> serverS;
+        std::stringstream iss;
 
         Webserv();
 
+        int recving(int currSd, std::string *req);
         int         initServ(int port);
         void        newConnHandling(int serverSd);
         void        existingConnHandling(int currSd);

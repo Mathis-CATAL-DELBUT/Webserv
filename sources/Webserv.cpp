@@ -175,7 +175,7 @@ void Webserv::existingConnHandling(int currSd)
     }
 }
 
-int recving(int currSd, std::string *req)
+int Webserv::recving(int currSd, std::string *req)
 {
     char bf[BUFFER_SIZE + 1];
     int rc = recv(currSd, bf, BUFFER_SIZE, 0);
@@ -185,8 +185,13 @@ int recving(int currSd, std::string *req)
             strerror(errno);
         return rc;
     }
-    bf[rc] = 0;
-    *req += std::string(bf);
+    bf[rc + 1] = 0;
+    // for (int i = 0 ; i < rc + 1 ; i++)
+    //     std::cout << bf[i];
+    std::string str(bf, bf + rc + 1);
+    std::cout << str;
+    (*req).append(str);
+    // std::cout << "Taille req = " << (*req).size() << std::endl;
     return rc;
 }
 
@@ -195,10 +200,11 @@ int Webserv::receiveRequest(int currSd)
     int allbytes = 0, rc = BUFFER_SIZE;
     std::string req = "";
 
-    std::cout << "Receiving . . ." << std::endl;
+    std::cout << "Receiving . . . REQ = " << req.size() << std::endl;
     while (rc == BUFFER_SIZE)
     {
         rc = recving(currSd, &req);
+        // std::cout << "rc = " << rc << std::endl;
         if (rc <= 0)
         {
             if (rc == -1)
@@ -208,7 +214,7 @@ int Webserv::receiveRequest(int currSd)
         allbytes += rc;
     }
     std::cout << "All data received : " << allbytes << " bytes" << std::endl;
-    // std::cout << req << std::endl;
+    std::cout << "SIZE STRING >>>>>>>>> " << req.size() << std::endl;
     clientS[currSd] = std::make_pair(new Request(req), new Response());
     FD_CLR(currSd, &rfds);
     FD_SET(currSd, &wfds);
@@ -238,6 +244,7 @@ void Webserv::sendResponse(int currSd)
     clientS[currSd].second = handle_request(_config, clientS[currSd].first);
 	if (clientS[currSd].second == NULL)
 		return;
+    std::cout << clientS[currSd].second->getResponse() << std::endl;
     int rc = send(currSd, (clientS[currSd].second->getResponse()).c_str(), (clientS[currSd].second->getResponse()).size(), 0);
     std::cout << "Response sent for " << clientS[currSd].first->getValue("File") << std::endl;
     if (rc < 0)
