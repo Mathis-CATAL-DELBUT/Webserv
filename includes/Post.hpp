@@ -6,7 +6,7 @@
 /*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 15:33:52 by tedelin           #+#    #+#             */
-/*   Updated: 2023/09/22 14:25:40 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/10/04 11:36:31 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ class Post : public Response {
 		~Post();
 
 		void	createFile();
-		void	cgi_exec();
 		
 	private:
 		Post();

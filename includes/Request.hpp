@@ -6,7 +6,7 @@
 /*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 17:44:48 by tedelin           #+#    #+#             */
-/*   Updated: 2023/09/24 17:30:33 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/10/04 10:32:38 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 #include <string>
 #include <map>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
 // GET /image/norminet.jpg HTTP/1.1
 // Host: localhost:85

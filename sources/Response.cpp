@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 15:33:33 by tedelin           #+#    #+#             */
-/*   Updated: 2023/09/29 13:38:25 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/10/07 16:53:58 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,15 @@ Response::Response(Parsing* i_config, Request* i_request) : config(i_config), re
 	status = 200;
 	connection = request->getValue("Connection");
 	body = "";
-	if (request->getValue("File").find("CGI") != std::string::npos)
-		doCGI(request);
+	if (request->getValue("File").find("CGI") != std::string::npos) {
+		upload_file();
+		// if (request->getValue("boudary") != "") {
+		// 	upload_file();
+		// }
+		// else {
+		// 	doCGI();
+		// }
+	}
 	else
 	{
 		content_type = config->getExtension(&(request->getValue("File"))[request->getValue("File").find(".") + 1]);
@@ -40,15 +47,55 @@ Response&	Response::operator=(const Response& rhs) {
 	return (*this);
 }
 
-void	Response::doCGI(Request* request)
-{
+void	Response::upload_file() {
+	std::string file_path = config->getRoot() + request->getValue("File") + "/" + request->getValue("file_name");
+	std::cout << "PATH:" << file_path << std::endl;
+	std::ofstream file(file_path.c_str());
+	file << request->getValue("Body");
+	file.close();
+}
+
+pid_t Response::write_stdin(int *fd_in, int *fd_out) {
+	char * info = new char[request->getValue("form").size() + 1];
+	strcpy(info, request->getValue("form").c_str());
+	char *const args[] = { (char*)"/usr/bin/echo", info, NULL };
+    char *const env[] = { NULL };
+    pid_t child_pid = fork();
+    if (child_pid == 0) {
+        dup2(*fd_out, 1);
+		close(*fd_in);
+		close(*fd_out);
+        execve("/usr/bin/echo", args, env);
+    } else {
+		close(*fd_out);
+    }
+	return child_pid;
+}
+
+pid_t	Response::exec_script(int *fd_in, int *fd_out) {
 	char **env = NULL;
 	char **av = NULL;
-	unlink("data/CGI/.CGI.txt");
 	pid_t child_pid = fork();
-	if (child_pid == 0) 
-		execve(("data" + std::string(request->getValue("File"))).c_str(), av, env);
-	waitpid(child_pid, NULL, 0);
+	if (child_pid == 0) {
+		dup2(*fd_in, STDIN_FILENO);
+		close(*fd_in);
+		if (execve(("data" + std::string(request->getValue("File"))).c_str(), av, env) == -1)
+			exit(EXIT_FAILURE);
+	} else {
+       	close(*fd_in);
+        close(*fd_out);
+	}
+	return (child_pid);
+}
+
+void	Response::doCGI()
+{
+	unlink("data/CGI/.CGI.txt");
+	int fd[2];
+	pipe(fd);
+	int state;
+	waitpid(write_stdin(&fd[0], &fd[1]), &state, 0);
+	waitpid(exec_script(&fd[0], &fd[1]), NULL, 0);
 	std::fstream file("data/CGI/.CGI.txt");
 	std::string filePath = "data/CGI/.CGI.txt";
 	body = getFileContent(filePath);
@@ -128,8 +175,6 @@ void	Response::setBody(const std::string& file_path) {
 	}
 	else if (body == "" && status != 200) {
 		std::string file_path = config->getRoot() + "/error_page/" + convertInt(status) + ".html";
-		// std::string file_path = config->getErrorPage()[convertInt(status)];
-		// std::cout << "bodyfilepath:" << file_path << std::endl;
 		std::ifstream file(file_path.c_str());
 		if (file.is_open()) 
 			body = getFileContent(file_path);
@@ -152,8 +197,6 @@ std::string Response::getResponse() {
 	buff << std::endl << body;
 	
 	return (buff.str());
-	// std::string str = buff.str();
-	// std::cout << str << std::endl;
 }
 
 Response::~Response() {}
