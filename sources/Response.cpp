@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 15:33:33 by tedelin           #+#    #+#             */
-/*   Updated: 2023/10/07 16:53:58 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/10/09 15:36:40 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,12 @@ Response::Response(Parsing* i_config, Request* i_request) : config(i_config), re
 	connection = request->getValue("Connection");
 	body = "";
 	if (request->getValue("File").find("CGI") != std::string::npos) {
-		upload_file();
-		// if (request->getValue("boudary") != "") {
-		// 	upload_file();
-		// }
-		// else {
-		// 	doCGI();
-		// }
+		if (request->getValue("boundary") != "") {
+			upload_file();
+		}
+		else {
+			doCGI();
+		}
 	}
 	else
 	{

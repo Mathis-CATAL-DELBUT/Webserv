@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parsing.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:51 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/09/28 14:20:18 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/10/10 10:25:12 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ Parsing::Parsing(std::string file)
         setRoot(file) || setIndex(file) || 
         setErrorPage(file) || setImage(file) || 
         setHtml(file) || setWelcome(file) ||
-        setCss(file) || setScript(file))
+        setCss(file) || setScript(file) || 
+        setClientMaxBodySize(file) || setDirectoryListing(file))
     {
         std::cout << "Error Parsing: " << file << std::endl;
         exit(1);
@@ -80,6 +81,12 @@ std::vector<std::string> Parsing::getCss() const
 std::vector<std::string> Parsing::getScript() const
 {return (this->script);}
 
+int Parsing::getClientMaxBodySize() const
+{return (this->client_max_body_size);}
+
+std::string Parsing::getDirecotoryListing() const
+{return (this->directory_listing);}
+
 const std::string&	Parsing::getDefaultErrorPage(const std::string& error_code) 
 {	
 	return (default_error[error_code]);
@@ -93,7 +100,7 @@ const std::string&	Parsing::getExtension(const std::string& extension)
 int Parsing::setServerName(std::string file)
 {
     this->server_name = parseSoloElt(file, "server_name");
-    if (this->server_name == "")
+    if (this->server_name == "" || checkLink(this->server_name) == 1)
         return (1);
     return (0);
 }
@@ -101,14 +108,14 @@ int Parsing::setServerName(std::string file)
 int Parsing::setRoot(std::string file)
 {
     this->root = parseSoloElt(file, "root");
-    if (this->root == "")
+    if (this->root == "" || checkLink(this->root) == 1)
         return (1);
     return (0);
 }
 int Parsing::setIndex(std::string file)
 {
     this->index = parseSoloElt(file, "index");
-    if (this->index == "")
+    if (this->index == "" || checkLink(this->index) == 1)
         return (1);
     return (0);
 }
@@ -117,6 +124,11 @@ int Parsing::setErrorPage(std::string file)
     this->error_page = parseMultiEltString(file, "error_page");
     if (this->error_page.size() == 0)
         return (1);
+    for (int i = 0; i < this->error_page.size(); i++)
+    {
+        if (checkLink(this->error_page[i]) == 1)
+            return (1);
+    }
     return (0);
 }
 
@@ -125,6 +137,11 @@ int Parsing::setHtml(std::string file)
     this->html = parseMultiEltString(file, "Html");
     if (this->html.size() == 0)
         return (1);
+    for (int i = 0; i < this->html.size(); i++)
+    {
+        if (checkLink(this->html[i]) == 1)
+            return (1);
+    }
     return (0);
 }
 
@@ -133,6 +150,11 @@ int Parsing::setWelcome(std::string file)
     this->welcome = parseMultiEltString(file, "welcome");
     if (this->welcome.size() == 0)
         return (1);
+    for (int i = 0; i < this->welcome.size(); i++)
+    {
+        if (checkLink(this->welcome[i]) == 1)
+            return (1);
+    }
     return (0);
 }
 
@@ -141,6 +163,11 @@ int Parsing::setCss(std::string file)
     this->css = parseMultiEltString(file, "css");
     if (this->css.size() == 0)
         return (1);
+    for(int i = 0; i < this->css.size(); i++)
+    {
+        if (checkLink(this->css[i]) == 1)
+            return (1);
+    }
     return (0);
 }
 
@@ -149,6 +176,11 @@ int Parsing::setScript(std::string file)
     this->script = parseMultiEltString(file, "script");
     if (this->script.size() == 0)
         return (1);
+    for (int i = 0; i < this->script.size(); i++)
+    {
+        if (checkLink(this->script[i]) == 1)
+            return (1);
+    }
     return (0);
 }
 
@@ -168,7 +200,11 @@ int Parsing::setListen(std::string file)
                     if (line.find("}") != std::string::npos)
                         return (0);
                     else
-                        this->listen.push_back(atoi(line.c_str()));
+                    {
+                        removeSpace(line, file);
+                        if (onlyNumber(line) == 0)
+                            this->listen.push_back(atoi(line.c_str()));
+                    }
                 }
                 return (1);
             }
@@ -184,6 +220,30 @@ int Parsing::setImage(std::string file)
 {
     this->image = parseMultiEltString(file, "image");
     if (this->image.size() == 0)
+        return (1);
+    for (int i = 0; i < this->image.size(); i++)
+    {
+        if (checkLink(this->image[i]) == 1)
+            return (1);
+    }
+    return (0);
+}
+
+int Parsing::setClientMaxBodySize(std::string file)
+{
+    std::string client;
+    client = parseSoloElt(file, "client_max_body_size");
+    if (client == "" || onlyNumber(client) == 1)
+        return (1);
+    this->client_max_body_size = atoi(client.c_str());
+    return (0);
+}
+
+int Parsing::setDirectoryListing(std::string file)
+{
+    this->directory_listing = parseSoloElt(file, "directory_listing");
+    if (this->directory_listing.size() == 0 || 
+        (this->directory_listing != "on" && this->directory_listing != "off"))
         return (1);
     return (0);
 }
@@ -225,22 +285,43 @@ void	Parsing::setExtension() {
 }
 
 
-void Parsing::removeSpace(std::string &str)
+void Parsing::removeSpace(std::string &str, std::string file)
+{
+    int i = 0;
+    while (str[i] == ' ')
+        str.erase(i, 1);
+    while (str[i])
+            i++;
+    if (str[i - 1] != ';')
+    {
+        std::cout << "Error Parsing: " << file << std::endl;
+        exit(1);
+    }
+    str.erase(i - 1, 1);
+}
+
+int Parsing::onlyNumber(std::string str)
 {
     int i = 0;
     while (str[i])
     {
-        if (str[i] == ' ')
-            str.erase(i, 1);
-        else
-            i++;
+        if (str[i] < '0' || str[i] > '9')
+            return (1);
+        i++;
     }
-    if (str[i - 1] != ';')
+    return (0);
+}
+
+int Parsing::checkLink(std::string str)
+{
+    int i = 0;
+    while (str[i] )
     {
-        std::cout << "Parse error" << std::endl;
-        exit(1);
+        if (str[i] == ' ')
+            return (1);
+        i++;
     }
-    str.erase(i - 1, 1);
+    return (0);
 }
 
 std::string Parsing::parseSoloElt(std::string file, std::string name)
@@ -259,7 +340,7 @@ std::string Parsing::parseSoloElt(std::string file, std::string name)
                 result = line;
                 getline(fd, line);
                 if (line.find("}") != std::string::npos)
-                    return (removeSpace(result), result);
+                    return (removeSpace(result, file), result);
                 return ("");
             }
             return ("");
@@ -290,7 +371,7 @@ std::vector<std::string> Parsing::parseMultiEltString(std::string file, std::str
                             result.push_back(line.c_str());
                         else
                         {
-                            removeSpace(line);
+                            removeSpace(line, file);
                             result.push_back(line);
                         }
                     }
