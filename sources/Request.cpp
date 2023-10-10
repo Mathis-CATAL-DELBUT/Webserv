@@ -6,7 +6,7 @@
 /*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/18 14:20:02 by tedelin           #+#    #+#             */
-/*   Updated: 2023/10/07 16:41:33 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/10/10 10:39:03 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,20 @@ Request::Request() {}
 
 Request::Request(const std::string& s_request) {
 	std::string line;
+	// std::cout << s_request << std::endl;
 	std::istringstream iss(s_request);
 	size_t i = 0;
 	while (getline(iss, line)) {
 		if (i == 0 ) {
 			size_t pos = line.find(' ');
 			size_t pos_end = line.find(' ', pos + 1);
+			size_t qmark =  line.find('?');
 			_data["Method"] = line.substr(0, pos);
-			_data["File"] = line.substr(pos + 1, pos_end - pos - 1);
+			if (qmark != std::string::npos)
+				_data["File"] = line.substr(pos + 1, qmark - pos - 1);
+			else
+				_data["File"] = line.substr(pos + 1, pos_end - pos - 1);
+			_data["form"] = qmark != std::string::npos ? line.substr(qmark + 1, pos_end - qmark - 1) : "";
 		}
 		if (line.find("boundary=") != std::string::npos) {
 			size_t pos = line.find('=');
@@ -58,13 +64,13 @@ Request::Request(const std::string& s_request) {
 					}
 				}
 			}
-			else {
+			else if (line != "") {
 				_data["form"] = line;
 			}
 		}
 		i++;
 	}
-	display();
+	// display();
 }
 
 

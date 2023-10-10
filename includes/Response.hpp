@@ -6,7 +6,7 @@
 /*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/18 10:34:30 by tedelin           #+#    #+#             */
-/*   Updated: 2023/10/07 16:43:56 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/10/09 16:02:14 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ class Response {
 		pid_t				write_stdin(int *fd_in, int *fd_out);
 		pid_t				exec_script(int *fd_in, int *fd_out);
 		void				upload_file();
+		bool				checkDirectory();
 		// bool				checkHeaderError(const std::string& method);
 		
 		int status;

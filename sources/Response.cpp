@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 15:33:33 by tedelin           #+#    #+#             */
-/*   Updated: 2023/10/09 15:36:40 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/10/10 13:00:15 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,22 +19,21 @@ Response::Response(Parsing* i_config, Request* i_request) : config(i_config), re
 	status = 200;
 	connection = request->getValue("Connection");
 	body = "";
-	if (request->getValue("File").find("CGI") != std::string::npos) {
-		if (request->getValue("boundary") != "") {
-			upload_file();
-		}
-		else {
-			doCGI();
-		}
+	doCGI();
+	if (content_type == "") {
+		// if (checkDirectory())
+			status = 415;
 	}
-	else
-	{
-		content_type = config->getExtension(&(request->getValue("File"))[request->getValue("File").find(".") + 1]);
-		content_length = 0;
-	}
-	if (content_type == "")
-		status = 415;
 }
+
+// bool	Response::checkDirectory() {
+// 	if (config->dirlist == true) {
+// 		opendir();
+// 		readdir();
+// 	} else {
+// 		request->file = config->getRoot() + "default.html";
+// 	}
+// }
 
 Response::Response(const Response& cpy) {
 	*this = cpy;
@@ -89,17 +88,30 @@ pid_t	Response::exec_script(int *fd_in, int *fd_out) {
 
 void	Response::doCGI()
 {
-	unlink("data/CGI/.CGI.txt");
-	int fd[2];
-	pipe(fd);
-	int state;
-	waitpid(write_stdin(&fd[0], &fd[1]), &state, 0);
-	waitpid(exec_script(&fd[0], &fd[1]), NULL, 0);
-	std::fstream file("data/CGI/.CGI.txt");
-	std::string filePath = "data/CGI/.CGI.txt";
-	body = getFileContent(filePath);
-	content_type = "text/html";
-	content_length = body.size();
+	if (request->getValue("File").find("CGI") != std::string::npos) {
+		if (request->getValue("boundary") != "") {
+			upload_file();
+		}
+		else {
+			unlink("data/CGI/.CGI.txt");
+			int fd[2];
+			pipe(fd);
+			int state;
+			waitpid(write_stdin(&fd[0], &fd[1]), &state, 0);
+			waitpid(exec_script(&fd[0], &fd[1]), NULL, 0);
+			std::fstream file("data/CGI/.CGI.txt");
+			std::string filePath = "data/CGI/.CGI.txt";
+			body = getFileContent(filePath);
+			content_type = "text/html";
+			content_length = body.size();
+		}
+	}
+	else
+	{
+		content_type = config->getExtension(&(request->getValue("File"))[request->getValue("File").find(".") + 1]);
+		content_length = 0;
+	}
+	
 }
 
 std::string Response::getDate() {
