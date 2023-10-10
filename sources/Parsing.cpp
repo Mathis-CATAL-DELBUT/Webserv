@@ -6,7 +6,7 @@
 /*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:51 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/10/10 10:25:12 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/10/10 11:10:57 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,7 @@ int Parsing::setHtml(std::string file)
 
 int Parsing::setWelcome(std::string file)
 {
-    this->welcome = parseMultiEltString(file, "welcome");
+    this->welcome = parseMultiEltString(file, "welcome_page");
     if (this->welcome.size() == 0)
         return (1);
     for (int i = 0; i < this->welcome.size(); i++)
@@ -190,14 +190,14 @@ int Parsing::setListen(std::string file)
     std::ifstream fd(file.c_str());
     while (getline(fd, line))
     {
-        if (line.find("listen") != std::string::npos)
+        if (removeSpace(line) == "listen")
         {
             getline(fd, line);
-            if (line.find("{") != std::string::npos)
+            if (removeSpace(line) == "{")
             {
                 while (getline(fd, line))
                 {
-                    if (line.find("}") != std::string::npos)
+                    if (removeSpace(line) == "}")
                         return (0);
                     else
                     {
@@ -300,6 +300,19 @@ void Parsing::removeSpace(std::string &str, std::string file)
     str.erase(i - 1, 1);
 }
 
+std::string Parsing::removeSpace(std::string &str)
+{
+    int i = 0;
+    std::string result = "";
+    while (str[i])
+    {
+        if (str[i] != ' ')
+            result += str[i];
+        i++;
+    }
+    return (result);
+}
+
 int Parsing::onlyNumber(std::string str)
 {
     int i = 0;
@@ -331,15 +344,15 @@ std::string Parsing::parseSoloElt(std::string file, std::string name)
     std::ifstream fd(file.c_str());
     while (getline(fd, line))
     {
-        if (line.find(name) != std::string::npos)
+        if (removeSpace(line) == name)
         {
             getline(fd, line);
-            if (line.find("{") != std::string::npos)
+            if (removeSpace(line) == "{")
             {
                 getline(fd, line);
                 result = line;
                 getline(fd, line);
-                if (line.find("}") != std::string::npos)
+                if (removeSpace(line) == "}")
                     return (removeSpace(result, file), result);
                 return ("");
             }
@@ -356,14 +369,14 @@ std::vector<std::string> Parsing::parseMultiEltString(std::string file, std::str
     std::ifstream fd(file.c_str());
     while (getline(fd, line))
     {
-        if (line.find(name) != std::string::npos)
+        if (removeSpace(line) == name)
         {
             getline(fd, line);
-            if (line.find("{") != std::string::npos)
+            if (removeSpace(line) == "{")
             {
                 while (getline(fd, line))
                 {
-                    if (line.find("}") != std::string::npos)
+                    if (removeSpace(line) == "}")
                         return (result);
                     else
                     {

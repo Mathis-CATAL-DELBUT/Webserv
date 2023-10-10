@@ -6,7 +6,7 @@
 /*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:59 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/10/10 10:13:16 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/10/10 10:54:14 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ class Parsing
 		void	setExtension();
 
         void removeSpace(std::string &str, std::string file);
+        std::string removeSpace(std::string &str);
         std::string  parseSoloElt(std::string file, std::string name);
         std::vector<std::string> parseMultiEltString(std::string file, std::string name);
         int onlyNumber(std::string str);
