@@ -51,7 +51,7 @@ class Webserv
         bool _endServ, _closeConn, _timeout;
         fd_set rtmp, wtmp, rfds, wfds;
         Parsing* _config;
-        std::map<int, std::pair<Request*, Response*>> clientS;
+        std::map<int, std::pair<Request*, Response*> > clientS;
         std::vector<int> ports;
         std::map<int, int> serverS;
 

@@ -6,7 +6,7 @@
 /*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:51 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/10/10 11:10:57 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/10/10 11:24:59 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ int Parsing::setErrorPage(std::string file)
     this->error_page = parseMultiEltString(file, "error_page");
     if (this->error_page.size() == 0)
         return (1);
-    for (int i = 0; i < this->error_page.size(); i++)
+    for (std::vector<std::string>::size_type i = 0; i < this->html.size(); i++)
     {
         if (checkLink(this->error_page[i]) == 1)
             return (1);
@@ -137,7 +137,7 @@ int Parsing::setHtml(std::string file)
     this->html = parseMultiEltString(file, "Html");
     if (this->html.size() == 0)
         return (1);
-    for (int i = 0; i < this->html.size(); i++)
+    for (std::vector<std::string>::size_type i = 0; i < this->html.size(); i++)
     {
         if (checkLink(this->html[i]) == 1)
             return (1);
@@ -150,7 +150,7 @@ int Parsing::setWelcome(std::string file)
     this->welcome = parseMultiEltString(file, "welcome_page");
     if (this->welcome.size() == 0)
         return (1);
-    for (int i = 0; i < this->welcome.size(); i++)
+    for (std::vector<std::string>::size_type i = 0; i < this->html.size(); i++)
     {
         if (checkLink(this->welcome[i]) == 1)
             return (1);
@@ -163,7 +163,7 @@ int Parsing::setCss(std::string file)
     this->css = parseMultiEltString(file, "css");
     if (this->css.size() == 0)
         return (1);
-    for(int i = 0; i < this->css.size(); i++)
+    for (std::vector<std::string>::size_type i = 0; i < this->html.size(); i++)
     {
         if (checkLink(this->css[i]) == 1)
             return (1);
@@ -176,7 +176,7 @@ int Parsing::setScript(std::string file)
     this->script = parseMultiEltString(file, "script");
     if (this->script.size() == 0)
         return (1);
-    for (int i = 0; i < this->script.size(); i++)
+    for (std::vector<std::string>::size_type i = 0; i < this->html.size(); i++)
     {
         if (checkLink(this->script[i]) == 1)
             return (1);
@@ -221,7 +221,7 @@ int Parsing::setImage(std::string file)
     this->image = parseMultiEltString(file, "image");
     if (this->image.size() == 0)
         return (1);
-    for (int i = 0; i < this->image.size(); i++)
+    for (std::vector<std::string>::size_type i = 0; i < this->html.size(); i++)
     {
         if (checkLink(this->image[i]) == 1)
             return (1);
