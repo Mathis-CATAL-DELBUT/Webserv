@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 15:33:33 by tedelin           #+#    #+#             */
-/*   Updated: 2023/10/11 15:23:34 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/10/11 16:19:25 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "Request.hpp"
 #include <stdio.h>
 #include <dirent.h>
+#include <sstream>
 
 Response::Response() {}
 
@@ -21,13 +22,42 @@ Response::Response(Parsing* i_config, Request* i_request) : config(i_config), re
 	status = 200;
 	connection = request->getValue("Connection");
 	body = "";
-	doCGI();
+	setMethod();
 	if (content_type == "") {
 			status = 415;
 	}
 }
 
-#include <sstream>
+void	Response::setMethod() {
+	std::vector<std::string> _implemented_method;
+	std::string r_method = request->getValue("Method");
+	std::string file_path = config->getRoot() + request->getValue("File");
+	// Need to add config file protection 
+	if (r_method == "GET" || r_method == "POST") {
+		if (request->getValue("File").find("CGI") != std::string::npos) {
+			Cgi(request, config);
+			std::string filePath = "data/CGI/.CGI.txt";
+			body = getFileContent(filePath);
+			content_type = "text/html";
+			content_length = body.size();
+		} else {
+			content_type = config->getExtension(&(request->getValue("File"))[request->getValue("File").find(".") + 1]);
+			content_length = 0;
+		}		
+	}
+	if (r_method == "GET") {
+		if (checkDirectory(request->getValue("File")) == false) {
+			checkFile(file_path);
+			setBody(file_path);
+		}
+	}
+	else if (r_method == "DELETE") {
+		checkFile(file_path);
+		if (status == 200) {
+			remove(file_path.c_str());
+		}
+	}
+}
 
 bool Response::checkDirectory(std::string& file_path) {
 	std::stringstream response;
@@ -74,75 +104,6 @@ Response&	Response::operator=(const Response& rhs) {
 	if (this != &rhs) {
 	}
 	return (*this);
-}
-
-void	Response::upload_file() {
-	std::string file_path = config->getRoot() + request->getValue("File") + "/" + request->getValue("file_name");
-	std::cout << "PATH:" << file_path << std::endl;
-	std::ofstream file(file_path.c_str());
-	file << request->getValue("Body");
-	file.close();
-}
-
-pid_t Response::write_stdin(int *fd_in, int *fd_out) {
-	char * info = new char[request->getValue("form").size() + 1];
-	strcpy(info, request->getValue("form").c_str());
-	char *const args[] = { (char*)"/usr/bin/echo", info, NULL };
-    char *const env[] = { NULL };
-    pid_t child_pid = fork();
-    if (child_pid == 0) {
-        dup2(*fd_out, 1);
-		close(*fd_in);
-		close(*fd_out);
-        execve("/usr/bin/echo", args, env);
-    } else {
-		close(*fd_out);
-    }
-	return child_pid;
-}
-
-pid_t	Response::exec_script(int *fd_in, int *fd_out) {
-	char **env = NULL;
-	char **av = NULL;
-	pid_t child_pid = fork();
-	if (child_pid == 0) {
-		dup2(*fd_in, STDIN_FILENO);
-		close(*fd_in);
-		if (execve(("data" + std::string(request->getValue("File"))).c_str(), av, env) == -1)
-			exit(EXIT_FAILURE);
-	} else {
-       	close(*fd_in);
-        close(*fd_out);
-	}
-	return (child_pid);
-}
-
-void	Response::doCGI()
-{
-	if (request->getValue("File").find("CGI") != std::string::npos) {
-		if (request->getValue("boundary") != "") {
-			upload_file();
-		}
-		else {
-			unlink("data/CGI/.CGI.txt");
-			int fd[2];
-			pipe(fd);
-			int state;
-			waitpid(write_stdin(&fd[0], &fd[1]), &state, 0);
-			waitpid(exec_script(&fd[0], &fd[1]), NULL, 0);
-			std::fstream file("data/CGI/.CGI.txt");
-			std::string filePath = "data/CGI/.CGI.txt";
-			body = getFileContent(filePath);
-			content_type = "text/html";
-			content_length = body.size();
-		}
-	}
-	else
-	{
-		content_type = config->getExtension(&(request->getValue("File"))[request->getValue("File").find(".") + 1]);
-		content_length = 0;
-	}
-	
 }
 
 std::string Response::getDate() {

@@ -6,7 +6,7 @@
 /*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:51 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/10/11 16:14:45 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/10/11 16:18:20 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ Parsing::Parsing(std::string file)
         this->listen.size() == 0)
     {
         std::cout << "Error Parsing: " << file << std::endl;
-        exit(1);
+        // exit(1);
     }
 	setExtension();
 	setDefaultErrorPage();

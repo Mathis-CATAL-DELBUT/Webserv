@@ -24,9 +24,7 @@
 #include "Request.hpp"
 #include "Response.hpp"
 #include "Parsing.hpp"
-#include "Get.hpp"
-#include "Post.hpp"
-#include "Delete.hpp"
+
 #ifndef BUFFER_SIZE
 #define BUFFER_SIZE 1024
 #endif
@@ -65,7 +63,6 @@ class Webserv
         void        closeConn(int currSd);
         int         stillNeedRecv(char *bf);
         int         handlingErrorInit(std::string function, int listenSd);
-        Response*	handle_request(Parsing *config, Request *req);
 };
 
 #endif

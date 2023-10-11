@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/18 10:34:30 by tedelin           #+#    #+#             */
-/*   Updated: 2023/10/11 15:20:04 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/10/11 16:18:09 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <cstring>
+#include "Cgi.hpp"
 
 class Response {
 	public:
@@ -39,20 +40,16 @@ class Response {
 
 		std::string				getResponse();
 		
-	protected:
-		void				checkFile(const std::string& file_path);
+	private:
 		std::string			getDate();
 		std::string			getFileContent(const std::string& file_path);
 		int					getFileLength(std::ifstream& file);
+		
+		void				setMethod();
 		void				setBody(const std::string& file_path);
-		void				sendHeaderError();
 		std::string			convertInt(int value);
-		void				doCGI();
-		pid_t				write_stdin(int *fd_in, int *fd_out);
-		pid_t				exec_script(int *fd_in, int *fd_out);
-		void				upload_file();
-		bool				checkDirectory(std::string& file_path);
-		// bool				checkHeaderError(const std::string& method);
+		void				checkFile(const std::string& file_path);
+		bool				checkDirectory(const std::string& file_path);
 		
 		int status;
 		int content_length;

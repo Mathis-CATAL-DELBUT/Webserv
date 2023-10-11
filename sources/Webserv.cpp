@@ -215,29 +215,10 @@ int Webserv::receiveRequest(int currSd)
     return 1;
 }
 
-Response*	Webserv::handle_request(Parsing *config, Request *req) {
-	std::string method = req->getValue("Method");
-	Response* rep;
-	if (method == "GET")
-		rep = new Get(config, req);
-	else if (method == "POST")
-		rep = new Post(config, req);
-	else if (method == "DELETE")
-		rep = new Delete(config, req);
-	else {
-		std::cout << "Unknown method" << std::endl;
-		return (NULL);
-	}
-    return rep;
-}
-
-
 void Webserv::sendResponse(int currSd)
 {
     std::cout << "Sending . . ." << std::endl;
-    clientS[currSd].second = handle_request(_config, clientS[currSd].first);
-	if (clientS[currSd].second == NULL)
-		return;
+	clientS[currSd].second = new Response(_config, clientS[currSd].first);
     int rc = send(currSd, (clientS[currSd].second->getResponse()).c_str(), (clientS[currSd].second->getResponse()).size(), 0);
     std::cout << "Response sent for " << clientS[currSd].first->getValue("File") << std::endl;
     if (rc < 0)
