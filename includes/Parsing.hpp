@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parsing.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:59 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/10/10 14:08:52 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/10/11 15:44:22 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ class Parsing
         Parsing(const Parsing &copy);
         
         int                         getClientMaxBodySize() const;
+        bool                        getMethod(std::string methode) const;
         std::vector<int>            getListen() const;
         std::string                 getServerName() const;
         std::string                 getDirectoryListing() const;
@@ -40,7 +41,6 @@ class Parsing
         std::vector<std::string>    getHtml() const;
         std::vector<std::string>    getWelcome() const;
         std::vector<std::string>    getCss() const;
-        std::vector<std::string>    getScript() const;
 		const std::string&		    getDefaultErrorPage(const std::string& error_code);
 		const std::string&		    getExtension(const std::string& extension);
         
@@ -48,11 +48,11 @@ class Parsing
         int                                 client_max_body_size;
         std::vector<int>                    listen;
         std::vector<std::string>            error_page;  
+        std::vector<std::string>            method;  
         std::vector<std::string>            image;  
         std::vector<std::string>            html;  
         std::vector<std::string>            welcome;  
         std::vector<std::string>            css;  
-        std::vector<std::string>            script;  
         std::string                         server_name;
         std::string                         directory_listing;
         std::string                         root;
@@ -60,6 +60,7 @@ class Parsing
 		std::map<std::string, std::string>	default_error;
 		std::map<std::string, std::string>	file_extension;
 
+        int     setMethod(std::string file);
         int     setDirectoryListing(std::string file);
         int     setClientMaxBodySize(std::string file);
         int     setListen(std::string file);
@@ -71,7 +72,6 @@ class Parsing
         int     setHtml(std::string file);
         int     setWelcome(std::string file);
         int     setCss(std::string file);
-        int     setScript(std::string file);
 		void	setDefaultErrorPage();
 		void	setExtension();
 

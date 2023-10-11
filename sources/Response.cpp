@@ -6,7 +6,7 @@
 /*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 15:33:33 by tedelin           #+#    #+#             */
-/*   Updated: 2023/10/11 13:53:18 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/10/11 15:23:34 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,20 +29,18 @@ Response::Response(Parsing* i_config, Request* i_request) : config(i_config), re
 
 #include <sstream>
 
-bool Response::checkDirectory(const std::string& file_path) {
-	std::cout << "HERE :" << file_path << std::endl;
+bool Response::checkDirectory(std::string& file_path) {
+	std::stringstream response;
     if (config->getDirectoryListing() == "on") {
         struct dirent *de;
         DIR* dr = opendir((config->getRoot() + file_path).c_str());
         if (dr == NULL)
             return false;
-        std::stringstream response;
 		std::string path = file_path;
 		if (path[path.size() - 1] != '/')
 			path += "/";
 		if (path.size() - 1 == '/')
 			path.erase(0, 1);
-		std::cout << "-----------PATH:" << path << std::endl;
         response << "<html><head><link rel='stylesheet' href='../style.css'><title>Directory Listing</title></head><body><h1>You have entered a directory, here are the files it contains:</h1><br/>";
 		while ((de = readdir(dr)) != NULL)
 		{
@@ -59,9 +57,12 @@ bool Response::checkDirectory(const std::string& file_path) {
     } 
 	else 
 	{
-        // request->file = config->getRoot() + "default.html";
-        return false;
+        struct dirent *de;
+        DIR* dr = opendir((config->getRoot() + file_path).c_str());
+        if (dr != NULL) 
+			file_path = "/welcome_page/welcome_page.html";
     }
+	return false;
 }
 
 

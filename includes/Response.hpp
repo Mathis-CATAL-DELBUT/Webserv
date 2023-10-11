@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/18 10:34:30 by tedelin           #+#    #+#             */
-/*   Updated: 2023/10/10 14:12:20 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/10/11 15:20:04 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ class Response {
 		pid_t				write_stdin(int *fd_in, int *fd_out);
 		pid_t				exec_script(int *fd_in, int *fd_out);
 		void				upload_file();
-		bool				checkDirectory(const std::string& file_path);
+		bool				checkDirectory(std::string& file_path);
 		// bool				checkHeaderError(const std::string& method);
 		
 		int status;

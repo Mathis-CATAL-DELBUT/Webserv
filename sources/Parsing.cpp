@@ -6,7 +6,7 @@
 /*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:51 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/10/11 14:09:38 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/10/11 15:57:43 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@ Parsing::Parsing(std::string file)
         setRoot(file) || setIndex(file) || 
         setErrorPage(file) || setImage(file) || 
         setHtml(file) || setWelcome(file) ||
-        setCss(file) || setScript(file) || 
-        setClientMaxBodySize(file) || setDirectoryListing(file) ||
+        setCss(file) || setClientMaxBodySize(file) || 
+        setDirectoryListing(file) || setMethod(file) ||
         this->listen.size() == 0)
     {
         std::cout << "Error Parsing: " << file << std::endl;
@@ -79,9 +79,6 @@ std::vector<std::string> Parsing::getWelcome() const
 std::vector<std::string> Parsing::getCss() const
 {return (this->css);}
 
-std::vector<std::string> Parsing::getScript() const
-{return (this->script);}
-
 int Parsing::getClientMaxBodySize() const
 {return (this->client_max_body_size);}
 
@@ -96,6 +93,16 @@ const std::string&	Parsing::getDefaultErrorPage(const std::string& error_code)
 const std::string&	Parsing::getExtension(const std::string& extension) 
 {
 	return (file_extension[extension]);
+}
+
+bool    Parsing::getMethod(std::string method) const
+{
+    for (std::vector<std::string>::size_type i = 0; i < this->method.size(); i++)
+    {
+        if (this->method[i] == method)
+            return (true);
+    }
+    return (false);
 }
 
 int Parsing::setServerName(std::string file)
@@ -172,19 +179,6 @@ int Parsing::setCss(std::string file)
     return (0);
 }
 
-int Parsing::setScript(std::string file)
-{
-    this->script = parseMultiEltString(file, "script");
-    if (this->script.size() == 0)
-        return (1);
-    for (std::vector<std::string>::size_type i = 0; i < this->script.size(); i++)
-    {
-        if (checkLink(this->script[i]) == 1)
-            return (1);
-    }
-    return (0);
-}
-
 int Parsing::setListen(std::string file)
 {
     std::string line;
@@ -199,11 +193,7 @@ int Parsing::setListen(std::string file)
                 while (getline(fd, line))
                 {
                     if (removeSpace(line) == "}")
-                    {
-                        // if (this->listen.size() == 0)
-                        //     return (1);
                         return (0);
-                    }
                     else
                     {
                         removeSpace(line, file);
@@ -250,6 +240,19 @@ int Parsing::setDirectoryListing(std::string file)
     if (this->directory_listing.size() == 0 || 
         (this->directory_listing != "on" && this->directory_listing != "off"))
         return (1);
+    return (0);
+}
+
+int Parsing::setMethod(std::string file)
+{
+    this->method = parseMultiEltString(file, "method");
+    if (this->method.size() == 0)
+        return (1);
+    for (std::vector<std::string>::size_type i = 0; i < this->method.size(); i++)
+    {
+        if (this->method[i] != "GET" && this->method[i] != "POST" && this->method[i] != "DELETE" && this->method[i] != "PUT" && this->method[i] != "HEAD" && this->method[i] != "CONNECT" && this->method[i] != "OPTIONS" && this->method[i] != "TRACE" && this->method[i] != "PATCH")
+            return (1);
+    }
     return (0);
 }
 
