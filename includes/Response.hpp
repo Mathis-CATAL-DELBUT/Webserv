@@ -6,7 +6,7 @@
 /*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/18 10:34:30 by tedelin           #+#    #+#             */
-/*   Updated: 2023/10/11 16:18:09 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/10/11 16:23:26 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ class Response {
 		void				setBody(const std::string& file_path);
 		std::string			convertInt(int value);
 		void				checkFile(const std::string& file_path);
-		bool				checkDirectory(const std::string& file_path);
+		bool				checkDirectory(std::string& file_path);
 		
 		int status;
 		int content_length;

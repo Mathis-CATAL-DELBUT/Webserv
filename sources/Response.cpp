@@ -6,7 +6,7 @@
 /*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 15:33:33 by tedelin           #+#    #+#             */
-/*   Updated: 2023/10/11 16:19:25 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/10/11 16:22:42 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,12 @@ void	Response::setMethod() {
 		}		
 	}
 	if (r_method == "GET") {
-		if (checkDirectory(request->getValue("File")) == false) {
-			checkFile(file_path);
-			setBody(file_path);
+		std::string path = request->getValue("File");
+		std::string file_path = config->getRoot() + path;
+		if (checkDirectory(path) == false) {
+			std::cout << "file_path: " << config->getRoot() + path << std::endl;
+			checkFile(config->getRoot() + path);
+			setBody(config->getRoot() + path);
 		}
 	}
 	else if (r_method == "DELETE") {
