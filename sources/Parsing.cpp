@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parsing.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:51 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/10/10 14:09:16 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/10/11 14:09:38 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ Parsing::Parsing(std::string file)
         setErrorPage(file) || setImage(file) || 
         setHtml(file) || setWelcome(file) ||
         setCss(file) || setScript(file) || 
-        setClientMaxBodySize(file) || setDirectoryListing(file))
+        setClientMaxBodySize(file) || setDirectoryListing(file) ||
+        this->listen.size() == 0)
     {
         std::cout << "Error Parsing: " << file << std::endl;
         exit(1);
