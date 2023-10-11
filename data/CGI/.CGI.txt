@@ -3,5 +3,5 @@
 <head><title>Script CGI en Python</title><link rel="stylesheet" href="../style.css"></head>
 <body>
 <h1>Bienvenue sur mon script CGI en Python</h1>
-<p>Date et heure actuelles : 2023-10-11 13:18:50.738630</p></body>
+<p>Date et heure actuelles : 2023-10-11 13:56:52.738222</p></body>
 </html>

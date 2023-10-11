@@ -6,7 +6,7 @@
 /*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 15:33:33 by tedelin           #+#    #+#             */
-/*   Updated: 2023/10/11 13:19:00 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/10/11 13:53:18 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,17 +30,24 @@ Response::Response(Parsing* i_config, Request* i_request) : config(i_config), re
 #include <sstream>
 
 bool Response::checkDirectory(const std::string& file_path) {
+	std::cout << "HERE :" << file_path << std::endl;
     if (config->getDirectoryListing() == "on") {
         struct dirent *de;
         DIR* dr = opendir((config->getRoot() + file_path).c_str());
         if (dr == NULL)
             return false;
         std::stringstream response;
+		std::string path = file_path;
+		if (path[path.size() - 1] != '/')
+			path += "/";
+		if (path.size() - 1 == '/')
+			path.erase(0, 1);
+		std::cout << "-----------PATH:" << path << std::endl;
         response << "<html><head><link rel='stylesheet' href='../style.css'><title>Directory Listing</title></head><body><h1>You have entered a directory, here are the files it contains:</h1><br/>";
 		while ((de = readdir(dr)) != NULL)
 		{
 			if (de->d_name[0] != '.')
-            	response << "<a class=directory href='" << de->d_name << "'>" << de->d_name << "</a><br/>";
+            	response << "<a class=directory href='" << path << de->d_name << "'>" << de->d_name << "</a><br/>";
 			else 
 				response << "<p class=directory_ano >" << de->d_name << "<p/><br/>" << std::endl;
 		}
