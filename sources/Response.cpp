@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 15:33:33 by tedelin           #+#    #+#             */
-/*   Updated: 2023/10/11 10:55:28 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/10/11 13:19:00 by mcatal-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,22 +27,36 @@ Response::Response(Parsing* i_config, Request* i_request) : config(i_config), re
 	}
 }
 
-bool	Response::checkDirectory(const std::string& file_path) {
-	if (config->getDirectoryListing() == "on") {
-		struct dirent	*de;
-		DIR* dr = opendir(file_path.c_str());
-		if (dr == NULL)
-			return (false);
-		while ((de = readdir(dr)) != NULL) {
-			std::cout << de->d_name << std::endl;
+#include <sstream>
+
+bool Response::checkDirectory(const std::string& file_path) {
+    if (config->getDirectoryListing() == "on") {
+        struct dirent *de;
+        DIR* dr = opendir((config->getRoot() + file_path).c_str());
+        if (dr == NULL)
+            return false;
+        std::stringstream response;
+        response << "<html><head><link rel='stylesheet' href='../style.css'><title>Directory Listing</title></head><body><h1>You have entered a directory, here are the files it contains:</h1><br/>";
+		while ((de = readdir(dr)) != NULL)
+		{
+			if (de->d_name[0] != '.')
+            	response << "<a class=directory href='" << de->d_name << "'>" << de->d_name << "</a><br/>";
+			else 
+				response << "<p class=directory_ano >" << de->d_name << "<p/><br/>" << std::endl;
 		}
-		closedir(dr);
-		return (true);
-	} else {
-		// request->file = config->getRoot() + "default.html";
-		return (false);
-	}
+        response << "</body></html>";
+		body = response.str();
+		content_length = body.size();
+        closedir(dr);
+        return true;
+    } 
+	else 
+	{
+        // request->file = config->getRoot() + "default.html";
+        return false;
+    }
 }
+
 
 Response::Response(const Response& cpy) {
 	*this = cpy;

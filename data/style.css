@@ -73,14 +73,14 @@ a {
 .norminet .mot-apparait {
     position: absolute;
     top: 0;
-    left: 100%; /* Place "Miaouuu" à droite de "Norminet" */
-    margin-left: 50px; /* Ajustez l'espacement entre "Norminet" et "Miaouuu" */
+    left: 100%;
+    margin-left: 50px; 
     opacity: 0;
     transition: opacity 0.5s ease, left 0.5s ease;
 }
 
 .norminet:hover .mot-apparait {
-    left: calc(70%); /* Ajustez l'espacement entre "Norminet" et "Miaouuu" */
+    left: calc(70%);
     opacity: 1;
 }
 
@@ -124,4 +124,16 @@ a {
 
 #map {
     border-radius: 10px;
+}
+
+.directory
+{
+    font-size: 70px;
+}
+
+.directory_ano
+{
+    font-size: 70px;
+    margin: 0;
+    padding: 0;
 }
