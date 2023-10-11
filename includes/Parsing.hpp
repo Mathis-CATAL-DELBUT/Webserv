@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parsing.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:59 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/10/11 15:44:22 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/10/11 16:15:17 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ class Parsing
         std::vector<std::string>    getCss() const;
 		const std::string&		    getDefaultErrorPage(const std::string& error_code);
 		const std::string&		    getExtension(const std::string& extension);
+		const std::string&			getErrorName(int status);
         
     private:
         int                                 client_max_body_size;
@@ -59,6 +60,7 @@ class Parsing
         std::string                         index;
 		std::map<std::string, std::string>	default_error;
 		std::map<std::string, std::string>	file_extension;
+		std::map<int, std::string>			_errorname;
 
         int     setMethod(std::string file);
         int     setDirectoryListing(std::string file);
@@ -74,6 +76,7 @@ class Parsing
         int     setCss(std::string file);
 		void	setDefaultErrorPage();
 		void	setExtension();
+		void	setErrorName();
 
         void removeSpace(std::string &str, std::string file);
         std::string removeSpace(std::string &str);

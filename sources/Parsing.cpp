@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parsing.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:51 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/10/11 15:57:43 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/10/11 16:14:45 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -290,6 +290,27 @@ void	Parsing::setExtension() {
 	file_extension["7z"] = "application/x-7z-compressed";
 	file_extension["json"] = "application/json";
 	file_extension["xml"] = "application/xml";
+}
+
+void			Parsing::setErrorName()
+{
+	_errorname[100] = "Continue";
+	_errorname[200] = "OK";
+	_errorname[201] = "Created";
+	_errorname[204] = "No Content";
+	_errorname[301] = "Moved Permanently";
+	_errorname[308] = "Permanent Redirect";
+	_errorname[400] = "Bad Request";
+	_errorname[403] = "Forbidden";
+	_errorname[404] = "Not Found";
+	_errorname[405] = "Method Not Allowed";
+	_errorname[408] = "Request Timeout";
+	_errorname[413] = "Payload Too Large";
+	_errorname[500] = "Internal Server Error";
+}
+
+const std::string&	Parsing::getErrorName(int status) {
+	return (_errorname[status]);
 }
 
 
