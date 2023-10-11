@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parsing.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:51 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/10/10 12:57:30 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/10/10 14:09:16 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ std::vector<std::string> Parsing::getScript() const
 int Parsing::getClientMaxBodySize() const
 {return (this->client_max_body_size);}
 
-std::string Parsing::getDirecotoryListing() const
+std::string Parsing::getDirectoryListing() const
 {return (this->directory_listing);}
 
 const std::string&	Parsing::getDefaultErrorPage(const std::string& error_code) 

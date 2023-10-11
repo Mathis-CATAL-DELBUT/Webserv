@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parsing.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 13:23:59 by mcatal-d          #+#    #+#             */
-/*   Updated: 2023/10/10 10:54:14 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/10/10 14:08:52 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ class Parsing
         int                         getClientMaxBodySize() const;
         std::vector<int>            getListen() const;
         std::string                 getServerName() const;
-        std::string                 getDirecotoryListing() const;
+        std::string                 getDirectoryListing() const;
         std::string                 getRoot() const;
         std::string                 getIndex() const;
         std::vector<std::string>    getErrorPage();

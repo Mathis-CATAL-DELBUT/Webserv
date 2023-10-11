@@ -6,12 +6,14 @@
 /*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/20 15:33:33 by tedelin           #+#    #+#             */
-/*   Updated: 2023/10/10 13:00:15 by tedelin          ###   ########.fr       */
+/*   Updated: 2023/10/11 10:55:28 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
 #include "Request.hpp"
+#include <stdio.h>
+#include <dirent.h>
 
 Response::Response() {}
 
@@ -21,19 +23,26 @@ Response::Response(Parsing* i_config, Request* i_request) : config(i_config), re
 	body = "";
 	doCGI();
 	if (content_type == "") {
-		// if (checkDirectory())
 			status = 415;
 	}
 }
 
-// bool	Response::checkDirectory() {
-// 	if (config->dirlist == true) {
-// 		opendir();
-// 		readdir();
-// 	} else {
-// 		request->file = config->getRoot() + "default.html";
-// 	}
-// }
+bool	Response::checkDirectory(const std::string& file_path) {
+	if (config->getDirectoryListing() == "on") {
+		struct dirent	*de;
+		DIR* dr = opendir(file_path.c_str());
+		if (dr == NULL)
+			return (false);
+		while ((de = readdir(dr)) != NULL) {
+			std::cout << de->d_name << std::endl;
+		}
+		closedir(dr);
+		return (true);
+	} else {
+		// request->file = config->getRoot() + "default.html";
+		return (false);
+	}
+}
 
 Response::Response(const Response& cpy) {
 	*this = cpy;

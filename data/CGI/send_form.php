@@ -28,7 +28,7 @@ $html_content = "<!DOCTYPE html>
         <p>Prenom: $prenom</p>
         <p>Email: $email</p>
         <p>Message: $message</p>
-        <a href=\"index.html\" class=\"go_back\">Go back</a>
+        <a href=\"../index.html\" class=\"go_back\">Go back</a>
     </div>
 </body>
 </html>";
