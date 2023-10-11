@@ -1,7 +1,0 @@
-
-<html>
-<head><title>Script CGI en Python</title><link rel="stylesheet" href="../style.css"></head>
-<body>
-<h1>Bienvenue sur mon script CGI en Python</h1>
-<p>Date et heure actuelles : 2023-10-11 16:24:03.606978</p></body>
-</html>

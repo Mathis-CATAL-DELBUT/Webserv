@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcatal-d <mcatal-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/18 14:20:02 by tedelin           #+#    #+#             */
-/*   Updated: 2023/10/11 15:08:54 by mcatal-d         ###   ########.fr       */
+/*   Updated: 2023/10/11 17:44:58 by tedelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,62 +15,41 @@
 Request::Request() {}
 
 Request::Request(const std::string& s_request) {
+	size_t header_end = s_request.find("\r\n\r\n");
+	std::string header = s_request;
+	if (header_end != std::string::npos) {
+		std::string header = s_request.substr(0, header_end);
+		_data["body"] = s_request.substr(header_end + 4, s_request.size() - header_end - 4);
+	}
+	std::istringstream iss(header);
 	std::string line;
-	// std::cout << s_request << std::endl;
-	std::istringstream iss(s_request);
-	size_t i = 0;
+	getline(iss, line);
+	parseFirstLine(line);
 	while (getline(iss, line)) {
-		if (i == 0 ) {
-			size_t pos = line.find(' ');
-			size_t pos_end = line.find(' ', pos + 1);
-			size_t qmark =  line.find('?');
-			_data["Method"] = line.substr(0, pos);
-			if (qmark != std::string::npos)
-				_data["File"] = line.substr(pos + 1, qmark - pos - 1);
-			else
-				_data["File"] = line.substr(pos + 1, pos_end - pos - 1);
-			_data["form"] = qmark != std::string::npos ? line.substr(qmark + 1, pos_end - qmark - 1) : "";
+		if (line.find(':') != std::string::npos) { 
+			parseHeader(line);
 		}
-		if (line.find("boundary=") != std::string::npos) {
-			size_t pos = line.find('=');
-			_data["boundary"] = line.substr(pos + 1, line.size() - pos - 2);
-		}
-		else if (line.find(':') != std::string::npos) { 
-			size_t pos = line.find(':');
-			std::string key = line.substr(0, pos);
-			_data[key] = line.substr(pos + 2, line.size() - pos - 3);
-		}
-		else if (line.size() == 1) {
-			getline(iss, line);
-			if (_data["boundary"] != "" && line.find(_data["boundary"]) != std::string::npos) {
-				while (getline(iss, line)) {
-					if (line.size() == 1) {
-						while (getline(iss, line)) {
-							if (line == "--" + _data["boundary"] + "--\r") {
-								break;
-							}
-							_data["Body"] += line;
-						}
-						break;
-					} else {
-						size_t pos = line.find(':');
-						std::string key = line.substr(0, pos);
-						_data["file_" + key] = line.substr(pos + 2, line.size() - pos - 3);
-						size_t file_name_pos = line.find("filename=");
-						if (file_name_pos != std::string::npos) {
-							size_t end = line.find("\"", file_name_pos + 10);
-							_data["file_name"] = line.substr(file_name_pos + 10, end - file_name_pos - 10);
-						}
-					}
-				}
-			}
-			else if (line != "") {
-				_data["form"] = line;
-			}
-		}
-		i++;
 	}
 	// display();
+}
+
+void	Request::parseFirstLine(const std::string& line) {
+	size_t pos = line.find(' ');
+	size_t pos_end = line.find(' ', pos + 1);
+	size_t qmark =  line.find('?');
+	_data["Method"] = line.substr(0, pos);
+	if (qmark != std::string::npos)
+		_data["File"] = line.substr(pos + 1, qmark - pos - 1);
+	else
+		_data["File"] = line.substr(pos + 1, pos_end - pos - 1);
+	if (qmark != std::string::npos)
+		_data["body"] = line.substr(qmark + 1, pos_end - qmark - 1);
+}
+
+void	Request::parseHeader(const std::string& line) {
+	size_t pos = line.find(':');
+	std::string key = line.substr(0, pos);
+	_data[key] = line.substr(pos + 2, line.size() - pos - 3);
 }
 
 
