@@ -11,20 +11,20 @@ function checkGuess() {
     const userGuess = parseInt(guessInput.value);
     
     if (isNaN(userGuess) || userGuess < 0 || userGuess > 100) {
-        message.textContent = "Veuillez entrer un nombre valide entre 0 et 100.";
+        message.textContent = "Please enter a valid number between 0 and 100.";
         return;
     }
     lives--;
     if (userGuess === targetNumber) {
-        message.textContent = `Bravo ! Vous avez deviné le nombre ${targetNumber}.`;
+        message.textContent = `Congratulations! The number was ${targetNumber}.`;
         endGame();
     } else if (lives === 0) {
-        message.textContent = `Vous avez épuisé toutes vos vies. Le nombre était ${targetNumber}.`;
+        message.textContent = `You've used up all your lives. The number was ${targetNumber}.`;
         endGame();
     } else if (userGuess < targetNumber) {
-        message.textContent = `Trop bas. Vous avez ${lives} vies restantes.`;
+        message.textContent = `Is more! You have ${lives} left.`;
     } else {
-        message.textContent = `Trop élevé. Vous avez ${lives} vies restantes.`;
+        message.textContent = `Is less! You have ${lives} left.`;
     }
     guessInput.value = '';
 }

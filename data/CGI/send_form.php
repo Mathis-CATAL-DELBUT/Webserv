@@ -17,7 +17,7 @@ $html_content = "<!DOCTYPE html>
 <html lang=\"en\">
 <head>
     <link rel=\"icon\" href=\"image/w.webp\">
-    <link rel=\"stylesheet\" href=\"style.css\">
+    <link rel=\"stylesheet\" href=\"../style.css\">
     <meta charset=\"UTF-8\">
     <title>Form Response</title>
 </head>

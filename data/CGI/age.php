@@ -15,7 +15,7 @@ $statut_age = ($age >= 18) ? 'majeur' : 'mineur';
 
 // Write data to the file
 $file_path = '.CGI.txt'; // Use the correct relative path to access the .CGI.txt file
-$html_content = "<html><head><meta charset='UTF-8'></head><body><h1>Vous êtes $nom $prenom et vous êtes $statut_age.</h1></body></html>";
+$html_content = "<html><head><meta charset='UTF-8'></head><link rel=\"stylesheet\" href=\"../style.css\"><body><h1>Vous êtes $nom $prenom et vous êtes $statut_age.</h1></body></html>";
 
 if (file_put_contents($file_path, $html_content) === false) {
     echo "Échec de l'écriture du fichier.";
