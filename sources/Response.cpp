@@ -78,7 +78,6 @@ bool Response::checkDirectory(std::string& file_path) {
     } 
 	else 
 	{
-        struct dirent *de;
         DIR* dr = opendir((config->getRoot() + file_path).c_str());
         if (dr != NULL) 
 			file_path = "/welcome_page/welcome_page.html";

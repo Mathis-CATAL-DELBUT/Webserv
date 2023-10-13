@@ -1,6 +1,6 @@
 #include "Webserv.hpp"
 
-Webserv::Webserv(Parsing* config) : _endServ(false), ports(config->getListen()), _timeout(false)
+Webserv::Webserv(Parsing* config) : _endServ(false), _timeout(false), ports(config->getListen())
 {
     _config = config;
     FD_ZERO(&rfds);
@@ -11,7 +11,7 @@ Webserv::Webserv(Parsing* config) : _endServ(false), ports(config->getListen()),
 
 Webserv::~Webserv() {}
 
-Webserv::Webserv(Webserv const &copy) {}
+Webserv::Webserv(Webserv const &copy) {(void) copy;}
 
 Webserv &Webserv::operator=(Webserv const &rhs)
 {
@@ -30,8 +30,8 @@ int Webserv::handlingErrorInit(std::string function, int listenSd)
 
 bool Webserv::initAllServ()
 {
-    int fd, i = 0;
-    for (; i < this->ports.size() ; i++)
+    int fd;
+    for (std::vector<int>::size_type i = 0 ; i < this->ports.size() ; i++)
     {
         fd = initServ(ports[i]);
         this->serverS[fd] = this->ports[i];
