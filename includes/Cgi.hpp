@@ -18,10 +18,15 @@ class Cgi {
 
 		pid_t	writeStdin(int *fd_in, int* fd_out);
 		pid_t	execScript(int *fd_int, int* fd_out);
+		char**	mapToTab();
+		void	setEnv();
 		void	doCGI();
 
 	private:
 		Cgi();
+
+		std::map<std::string, std::string> _env;
+		char		**_cgi_env;
 		Request*	_request;
 		Parsing*	_config;
 

@@ -8,46 +8,44 @@ Response::Response() {}
 
 Response::Response(Parsing* i_config, Request* i_request) : config(i_config), request(i_request) {
 	status = 200;
-	connection = request->getValue("Connection");
+	file_path = config->getRoot() + request->data["File"];
 	body = "";
 	setMethod();
-	if (content_type == "") {
-			status = 415;
-	}
 }
 
-void	Response::setMethod() {
-	std::vector<std::string> _implemented_method;
-	std::string r_method = request->getValue("Method");
-	std::string file_path = config->getRoot() + request->getValue("File");
+void	Response::setMethod() { 
 	// Need to add config file protection 
-	if (r_method == "GET" || r_method == "POST") {
-		if (request->getValue("File").find("CGI") != std::string::npos) {
-			Cgi(request, config);
-			std::string filePath = "data/CGI/.CGI.txt";
-			body = getFileContent(filePath);
-			content_type = "text/html";
-			content_length = body.size();
-		} else {
-			content_type = config->getExtension(&(request->getValue("File"))[request->getValue("File").find(".") + 1]);
-			content_length = 0;
-		}		
-	}
-	if (r_method == "GET") {
-		std::string path = request->getValue("File");
-		std::string file_path = config->getRoot() + path;
-		if (checkDirectory(path) == false) {
-			std::cout << "file_path: " << config->getRoot() + path << std::endl;
-			checkFile(config->getRoot() + path);
-			setBody(config->getRoot() + path);
+	// if (std::atoi(request->data["Content-Length"].c_str()) > config->getClientMaxBodySize())
+	// 	status = 413;
+	if ((config->getMethod("GET") || config->getMethod("POST") || config->getMethod("DELETE")) && status == 200) {
+		if (request->data["Method"] == "GET" || request->data["Method"] == "POST") {
+			if (request->data["File"].find("CGI") != std::string::npos) {
+				Cgi(request, config);
+				std::string filePath = "data/CGI/.CGI.txt";
+				body = getFileContent(filePath);
+				content_type = "text/html";
+				content_length = body.size();
+			} else {
+				content_type = config->getExtension(&(request->data["File"])[request->data["File"].find(".") + 1]);
+				content_length = 0;
+			}		
+		}
+		if (request->data["Method"] == "GET") {
+			std::string query = request->data["File"];
+			if (checkDirectory(query) == false) {
+				checkFile(file_path);
+				setBody(file_path);
+			}
+		}
+		else if (request->data["Method"] == "DELETE") {
+			checkFile(file_path);
+			if (status == 200) {
+				remove(file_path.c_str());
+			}
 		}
 	}
-	else if (r_method == "DELETE") {
-		checkFile(file_path);
-		if (status == 200) {
-			remove(file_path.c_str());
-		}
-	}
+	if (content_type == "")
+		status = 415;
 }
 
 bool Response::checkDirectory(std::string& file_path) {
@@ -124,11 +122,12 @@ void	Response::checkFile(const std::string& file_path) {
 				status = 403;
 			}
 			if (!(fileInfo.st_mode & S_IWUSR)) {
-				if (name == "DELETE")
+				if (request->data["Method"] == "DELETE")
 					status = 403;
 			}
 			else {
 				content_length = getFileLength(file);
+				content_type = config->getExtension(&(request->data["File"])[request->data["File"].find(".") + 1]);
 				if (content_length == 0)
 					status = 204;
 				file.close();

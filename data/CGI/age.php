@@ -1,21 +1,17 @@
 #!/usr/bin/php-cgi
 <?php
 
-// Read form data from stdin (POST data)
-$post_data = file_get_contents("php://stdin");
-parse_str($post_data, $form_data);
-
-// Get form data
-$nom = isset($form_data['nom']) ? $form_data['nom'] : 'valeur par défaut';
-$prenom = isset($form_data['prenom']) ? $form_data['prenom'] : 'default';
-$age = isset($form_data['age']) ? intval($form_data['age']) : 0;
+// Get form data from the GET request
+$nom = isset($_GET['nom']) ? $_GET['nom'] : 'valeur par défaut';
+$prenom = isset($_GET['prenom']) ? $_GET['prenom'] : 'default';
+$age = isset($_GET['age']) ? intval($_GET['age']) : 0;
 
 // Check user's age
 $statut_age = ($age >= 18) ? 'majeur' : 'mineur';
 
 // Write data to the file
 $file_path = '.CGI.txt'; // Use the correct relative path to access the .CGI.txt file
-$html_content = "<html><head><meta charset='UTF-8'></head><link rel=\"stylesheet\" href=\"../style.css\"><body><h1>Vous êtes $nom $prenom et vous êtes $statut_age.</h1></body></html>";
+$html_content = "<html><head><meta charset='UTF-8'><link rel=\"stylesheet\" href=\"../style.css\"></head><body><h1>Vous êtes $nom $prenom et vous êtes $statut_age.</h1></body></html>";
 
 if (file_put_contents($file_path, $html_content) === false) {
     echo "Échec de l'écriture du fichier.";

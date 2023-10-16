@@ -42,9 +42,9 @@ class Response {
 		int status;
 		int content_length;
 		
-		std::string content_type;
 		std::string connection;
-		std::string	name;
+		std::string content_type;
+		std::string	file_path;
 		std::string body;
 		
 		Parsing*	config;

@@ -14,7 +14,7 @@ class Request {
 		Request&	operator=(const Request& rhs);
 		Request(const Request& cpy);
 		
-		std::string	getValue(const std::string& key);
+		std::map<std::string, std::string> data;
 		
 	private:
 		void	display();
@@ -22,7 +22,6 @@ class Request {
 		void	parseFirstLine(const std::string& line);
 		void	parseHeader(const std::string& line);
 		void	parseRawBody();
-		std::map<std::string, std::string> _data;
 		
 };
 

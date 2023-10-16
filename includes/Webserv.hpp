@@ -54,6 +54,7 @@ class Webserv
 
         Webserv();
 
+		int recving(int currSd, std::string *req);
         int         initServ(int port);
         void        newConnHandling(int serverSd);
         void        existingConnHandling(int currSd);
