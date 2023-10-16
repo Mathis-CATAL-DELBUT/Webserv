@@ -22,7 +22,7 @@ Request::Request(const std::string& s_request) {
 			parseHeader(line);
 		}
 	}
-	display();
+	// display();
 }
 
 void	Request::parseFirstLine(const std::string& line) {
