@@ -52,7 +52,7 @@ void	Response::setMethod() {
 
 bool Response::checkDirectory(std::string& file_path) {
 	std::stringstream response;
-    if (config->getDirectoryListing() == "on") {
+    if (config->getDirectoryListing() == "on" && file_path != "/") {
         struct dirent *de;
         DIR* dr = opendir((config->getRoot() + file_path).c_str());
         if (dr == NULL)
