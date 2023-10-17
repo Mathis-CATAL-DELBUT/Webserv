@@ -37,7 +37,7 @@ class Response {
 		void				setBody(const std::string& file_path);
 		std::string			convertInt(int value);
 		void				checkFile(const std::string& file_path);
-		bool				checkDirectory(std::string& file_path);
+		bool				checkDirectory(std::string& path);
 		
 		int status;
 		int content_length;

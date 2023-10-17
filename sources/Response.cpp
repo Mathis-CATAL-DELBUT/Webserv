@@ -18,7 +18,7 @@ Response::Response(Parsing* i_config, Request* i_request) : config(i_config), re
 void	Response::setMethod() { 
 	if (std::atoi(request->data["Content-Length"].c_str()) > config->getClientMaxBodySize())
 		status = 413;
-	if ((config->getMethod("GET") || config->getMethod("POST") || config->getMethod("DELETE")) && status == 200) {
+	else if (config->getMethod(request->data["Method"]) == true && status == 200) {
 		if (request->data["Method"] != "DELETE") {
 			if (request->data["File"].find("CGI") != std::string::npos) {
 				Cgi cgi = Cgi(request, config);
@@ -36,6 +36,8 @@ void	Response::setMethod() {
 				remove(file_path.c_str());
 			}
 		}
+	} else {
+		status = 405;
 	}
 	setBody(file_path);
 	if (content_length == 0)
@@ -45,14 +47,13 @@ void	Response::setMethod() {
 }
 
 
-bool Response::checkDirectory(std::string& file_path) {
+bool Response::checkDirectory(std::string& path) {
 	std::stringstream response;
-    if (config->getDirectoryListing() == "on" && file_path != "/") {
+    if (config->getDirectoryListing() == "on" && path != "/") {
         struct dirent *de;
-        DIR* dr = opendir((config->getRoot() + file_path).c_str());
+        DIR* dr = opendir((config->getRoot() + path).c_str());
         if (dr == NULL)
             return false;
-		std::string path = file_path;
 		if (path[path.size() - 1] != '/')
 			path += "/";
 		if (path.size() - 1 == '/')
@@ -73,9 +74,9 @@ bool Response::checkDirectory(std::string& file_path) {
     } 
 	else 
 	{
-        // DIR* dr = opendir((config->getRoot() + file_path).c_str());
-        // if (dr != NULL) 
-		// 	file_path = "/welcome_page/welcome_page.html";
+        DIR* dr = opendir((config->getRoot() + path).c_str());
+        if (dr != NULL) 
+			file_path = "data/welcome_page/welcome_page.html";
 		return false;
     }
 }
@@ -154,11 +155,8 @@ std::string	Response::convertInt(int value) {
 }
 
 void	Response::setBody(const std::string& file_path) {
-	if (body == "")
+	if (body == "" && status == 200)
 		body = getFileContent(file_path);
-	if (body.size() == 0 && status == 200) {
-		status = 204;
-	}
 	else if (body == "" && status != 200) {
 		std::string file_path = config->getRoot() + "/error_page/" + convertInt(status) + ".html";
 		std::ifstream file(file_path.c_str());
@@ -167,15 +165,16 @@ void	Response::setBody(const std::string& file_path) {
 		else
 			body = config->getDefaultErrorPage(convertInt(status));
 		content_length = body.size();
-		content_type = "text/html";
 	}
+	if (status != 200)
+		content_type = "text/html";
 	content_length = body.size();
 }
 
 std::string Response::getResponse() {
 	std::stringstream buff;
 
-	buff << "HTTP/1.1 " << status << std::endl;
+	buff << "HTTP/1.1 " << status << " " << config->getErrorName(status) << std::endl;
 	buff << "Server: " << "Webserv" << std::endl;
 	buff << "Date: " << getDate() << std::endl;
 	buff << "Content-Type: " << content_type << std::endl;
