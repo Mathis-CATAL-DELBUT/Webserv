@@ -52,7 +52,7 @@ const sticksContainer = document.getElementById('sticks-container');
     startButton.addEventListener('click', function() {
         createSticks(21);
         startButton.disabled = true;
-        message.textContent = `Joueur 1, c'est à vous !`;
+        message.textContent = `Player 1, it's your turn!`;
         sticksLeft = 21;
         currentPlayer = 1;
         canRemoveSticks = true;
@@ -73,12 +73,12 @@ const sticksContainer = document.getElementById('sticks-container');
             });
 
             if (sticksLeft === 0) {
-                message.textContent = `Le Joueur ${currentPlayer} a perdu !`;
+                message.textContent = `Player ${currentPlayer} has lost!`;
                 canRemoveSticks = false;
                 resetButton.style.display = 'inline';
             } else {
                 currentPlayer = (currentPlayer === 1) ? 2 : 1;
-                message.textContent = `Joueur ${currentPlayer}, c'est à vous !`;
+                message.textContent = `Player ${currentPlayer}, it's your turn!`;
                 selectedSticks = 0;
                 removeButton.disabled = true;
                 canRemoveSticks = true;

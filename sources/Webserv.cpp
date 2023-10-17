@@ -1,6 +1,6 @@
 #include "Webserv.hpp"
 
-Webserv::Webserv(Parsing* config) : _endServ(false), ports(config->getListen()), _timeout(false)
+Webserv::Webserv(Parsing* config) : _endServ(false), _timeout(false), ports(config->getListen())
 {
     _config = config;
     FD_ZERO(&rfds);
@@ -11,7 +11,7 @@ Webserv::Webserv(Parsing* config) : _endServ(false), ports(config->getListen()),
 
 Webserv::~Webserv() {}
 
-Webserv::Webserv(Webserv const &copy) {}
+Webserv::Webserv(Webserv const &copy) {(void) copy;}
 
 Webserv &Webserv::operator=(Webserv const &rhs)
 {
@@ -30,8 +30,8 @@ int Webserv::handlingErrorInit(std::string function, int listenSd)
 
 bool Webserv::initAllServ()
 {
-    int fd, i = 0;
-    for (; i < this->ports.size() ; i++)
+    int fd;
+    for (std::vector<int>::size_type i = 0 ; i < this->ports.size() ; i++)
     {
         fd = initServ(ports[i]);
         this->serverS[fd] = this->ports[i];
@@ -189,8 +189,8 @@ int Webserv::recving(int currSd, std::string *req)
     // for (int i = 0 ; i < rc + 1 ; i++)
     //     std::cout << bf[i];
     std::string str(bf, bf + rc + 1);
-    std::cout << str;
     (*req).append(str);
+    // std::cout << str;
     // std::cout << "Taille req = " << (*req).size() << std::endl;
     return rc;
 }
@@ -214,39 +214,19 @@ int Webserv::receiveRequest(int currSd)
         allbytes += rc;
     }
     std::cout << "All data received : " << allbytes << " bytes" << std::endl;
-    std::cout << "SIZE STRING >>>>>>>>> " << req.size() << std::endl;
+    // std::cout << "SIZE STRING >>>>>>>>> " << req.size() << std::endl;
     clientS[currSd] = std::make_pair(new Request(req), new Response());
     FD_CLR(currSd, &rfds);
     FD_SET(currSd, &wfds);
     return 1;
 }
 
-Response*	Webserv::handle_request(Parsing *config, Request *req) {
-	std::string method = req->getValue("Method");
-	Response* rep;
-	if (method == "GET")
-		rep = new Get(config, req);
-	else if (method == "POST")
-		rep = new Post(config, req);
-	else if (method == "DELETE")
-		rep = new Delete(config, req);
-	else {
-		std::cout << "Unknown method" << std::endl;
-		return (NULL);
-	}
-    return rep;
-}
-
-
 void Webserv::sendResponse(int currSd)
 {
     std::cout << "Sending . . ." << std::endl;
-    clientS[currSd].second = handle_request(_config, clientS[currSd].first);
-	if (clientS[currSd].second == NULL)
-		return;
-    std::cout << clientS[currSd].second->getResponse() << std::endl;
+	clientS[currSd].second = new Response(_config, clientS[currSd].first);
     int rc = send(currSd, (clientS[currSd].second->getResponse()).c_str(), (clientS[currSd].second->getResponse()).size(), 0);
-    std::cout << "Response sent for " << clientS[currSd].first->getValue("File") << std::endl;
+    std::cout << "Response sent for " << clientS[currSd].first->data["File"] << std::endl;
     if (rc < 0)
         strerror(errno); //a modifier pour retourner erreur si il ya
     FD_CLR(currSd, &wfds);

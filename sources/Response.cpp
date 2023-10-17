@@ -1,40 +1,88 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Response.cpp                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ale-sain <ale-sain@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/20 15:33:33 by tedelin           #+#    #+#             */
-/*   Updated: 2023/10/09 15:44:35 by ale-sain         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Response.hpp"
 #include "Request.hpp"
+#include <stdio.h>
+#include <dirent.h>
+#include <sstream>
 
 Response::Response() {}
 
 Response::Response(Parsing* i_config, Request* i_request) : config(i_config), request(i_request) {
 	status = 200;
-	connection = request->getValue("Connection");
+	file_path = config->getRoot() + request->data["File"];
 	body = "";
-	if (request->getValue("File").find("CGI") != std::string::npos) {
-		if (request->getValue("boundary") != "") {
-			upload_file();
+	setMethod();
+}
+
+void	Response::setMethod() { 
+	// Need to add config file protection 
+	// if (std::atoi(request->data["Content-Length"].c_str()) > config->getClientMaxBodySize())
+	// 	status = 413;
+	if ((config->getMethod("GET") || config->getMethod("POST") || config->getMethod("DELETE")) && status == 200) {
+		if (request->data["Method"] == "GET" || request->data["Method"] == "POST") {
+			if (request->data["File"].find("CGI") != std::string::npos) {
+				Cgi(request, config);
+				std::string filePath = "data/CGI/.CGI.txt";
+				body = getFileContent(filePath);
+				content_type = "text/html";
+				content_length = body.size();
+			} else {
+				content_type = config->getExtension(&(request->data["File"])[request->data["File"].find(".") + 1]);
+				content_length = 0;
+			}		
 		}
-		else {
-			doCGI();
+		if (request->data["Method"] == "GET") {
+			std::string query = request->data["File"];
+			if (checkDirectory(query) == false) {
+				checkFile(file_path);
+				setBody(file_path);
+			}
 		}
-	}
-	else
-	{
-		content_type = config->getExtension(&(request->getValue("File"))[request->getValue("File").find(".") + 1]);
-		content_length = 0;
+		else if (request->data["Method"] == "DELETE") {
+			checkFile(file_path);
+			if (status == 200) {
+				remove(file_path.c_str());
+			}
+		}
 	}
 	if (content_type == "")
 		status = 415;
 }
+
+bool Response::checkDirectory(std::string& file_path) {
+	std::stringstream response;
+    if (config->getDirectoryListing() == "on" && file_path != "/") {
+        struct dirent *de;
+        DIR* dr = opendir((config->getRoot() + file_path).c_str());
+        if (dr == NULL)
+            return false;
+		std::string path = file_path;
+		if (path[path.size() - 1] != '/')
+			path += "/";
+		if (path.size() - 1 == '/')
+			path.erase(0, 1);
+        response << "<html><head><link rel='stylesheet' href='../style.css'><title>Directory Listing</title></head><body><h1>You have entered a directory, here are the files it contains:</h1><br/>";
+		while ((de = readdir(dr)) != NULL)
+		{
+			if (de->d_name[0] != '.')
+            	response << "<a class=directory href='" << path << de->d_name << "'>" << de->d_name << "</a><br/>";
+			else 
+				response << "<p class=directory_ano >" << de->d_name << "<p/><br/>" << std::endl;
+		}
+        response << "</body></html>";
+		body = response.str();
+		content_length = body.size();
+        closedir(dr);
+        return true;
+    } 
+	else 
+	{
+        DIR* dr = opendir((config->getRoot() + file_path).c_str());
+        if (dr != NULL) 
+			file_path = "/welcome_page/welcome_page.html";
+    }
+	return false;
+}
+
 
 Response::Response(const Response& cpy) {
 	*this = cpy;
@@ -44,62 +92,6 @@ Response&	Response::operator=(const Response& rhs) {
 	if (this != &rhs) {
 	}
 	return (*this);
-}
-
-void	Response::upload_file() {
-	std::string file_path = config->getRoot() + request->getValue("File") + "/" + request->getValue("file_name");
-	std::cout << "PATH:" << file_path << std::endl;
-	std::ofstream file(file_path.c_str());
-	file << request->getValue("Body");
-	file.close();
-}
-
-pid_t Response::write_stdin(int *fd_in, int *fd_out) {
-	char * info = new char[request->getValue("form").size() + 1];
-	strcpy(info, request->getValue("form").c_str());
-	char *const args[] = { (char*)"/usr/bin/echo", info, NULL };
-    char *const env[] = { NULL };
-    pid_t child_pid = fork();
-    if (child_pid == 0) {
-        dup2(*fd_out, 1);
-		close(*fd_in);
-		close(*fd_out);
-        execve("/usr/bin/echo", args, env);
-    } else {
-		close(*fd_out);
-    }
-	return child_pid;
-}
-
-pid_t	Response::exec_script(int *fd_in, int *fd_out) {
-	char **env = NULL;
-	char **av = NULL;
-	pid_t child_pid = fork();
-	if (child_pid == 0) {
-		dup2(*fd_in, STDIN_FILENO);
-		close(*fd_in);
-		if (execve(("data" + std::string(request->getValue("File"))).c_str(), av, env) == -1)
-			exit(EXIT_FAILURE);
-	} else {
-       	close(*fd_in);
-        close(*fd_out);
-	}
-	return (child_pid);
-}
-
-void	Response::doCGI()
-{
-	unlink("data/CGI/.CGI.txt");
-	int fd[2];
-	pipe(fd);
-	int state;
-	waitpid(write_stdin(&fd[0], &fd[1]), &state, 0);
-	waitpid(exec_script(&fd[0], &fd[1]), NULL, 0);
-	std::fstream file("data/CGI/.CGI.txt");
-	std::string filePath = "data/CGI/.CGI.txt";
-	body = getFileContent(filePath);
-	content_type = "text/html";
-	content_length = body.size();
 }
 
 std::string Response::getDate() {
@@ -130,11 +122,12 @@ void	Response::checkFile(const std::string& file_path) {
 				status = 403;
 			}
 			if (!(fileInfo.st_mode & S_IWUSR)) {
-				if (name == "DELETE")
+				if (request->data["Method"] == "DELETE")
 					status = 403;
 			}
 			else {
 				content_length = getFileLength(file);
+				content_type = config->getExtension(&(request->data["File"])[request->data["File"].find(".") + 1]);
 				if (content_length == 0)
 					status = 204;
 				file.close();

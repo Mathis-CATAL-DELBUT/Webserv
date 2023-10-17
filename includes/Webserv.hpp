@@ -16,7 +16,6 @@
 #include <fstream>
 #include <algorithm>
 #include <vector>
-#include <unordered_map>
 #include <fcntl.h>
 #include <map>
 #include <ctime>
@@ -24,9 +23,7 @@
 #include "Request.hpp"
 #include "Response.hpp"
 #include "Parsing.hpp"
-#include "Get.hpp"
-#include "Post.hpp"
-#include "Delete.hpp"
+
 #ifndef BUFFER_SIZE
 #define BUFFER_SIZE 1024
 #endif
@@ -51,14 +48,13 @@ class Webserv
         bool _endServ, _closeConn, _timeout;
         fd_set rtmp, wtmp, rfds, wfds;
         Parsing* _config;
-        std::map<int, std::pair<Request*, Response*>> clientS;
+        std::map<int, std::pair<Request*, Response*> > clientS;
         std::vector<int> ports;
         std::map<int, int> serverS;
-        std::stringstream iss;
 
         Webserv();
 
-        int recving(int currSd, std::string *req);
+		int recving(int currSd, std::string *req);
         int         initServ(int port);
         void        newConnHandling(int serverSd);
         void        existingConnHandling(int currSd);
@@ -67,7 +63,6 @@ class Webserv
         void        closeConn(int currSd);
         int         stillNeedRecv(char *bf);
         int         handlingErrorInit(std::string function, int listenSd);
-        Response*	handle_request(Parsing *config, Request *req);
 };
 
 #endif

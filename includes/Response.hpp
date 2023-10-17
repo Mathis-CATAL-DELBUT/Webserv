@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Response.hpp                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: tedelin <tedelin@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/18 10:34:30 by tedelin           #+#    #+#             */
-/*   Updated: 2023/10/07 16:43:56 by tedelin          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef Response_HPP
 #define Response_HPP
 #include <string>
@@ -28,6 +16,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <cstring>
+#include "Cgi.hpp"
 
 class Response {
 	public:
@@ -39,26 +28,23 @@ class Response {
 
 		std::string				getResponse();
 		
-	protected:
-		void				checkFile(const std::string& file_path);
+	private:
 		std::string			getDate();
 		std::string			getFileContent(const std::string& file_path);
 		int					getFileLength(std::ifstream& file);
+		
+		void				setMethod();
 		void				setBody(const std::string& file_path);
-		void				sendHeaderError();
 		std::string			convertInt(int value);
-		void				doCGI();
-		pid_t				write_stdin(int *fd_in, int *fd_out);
-		pid_t				exec_script(int *fd_in, int *fd_out);
-		void				upload_file();
-		// bool				checkHeaderError(const std::string& method);
+		void				checkFile(const std::string& file_path);
+		bool				checkDirectory(std::string& file_path);
 		
 		int status;
 		int content_length;
 		
-		std::string content_type;
 		std::string connection;
-		std::string	name;
+		std::string content_type;
+		std::string	file_path;
 		std::string body;
 		
 		Parsing*	config;
