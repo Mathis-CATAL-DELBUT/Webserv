@@ -181,19 +181,17 @@ int Webserv::recving(int currSd, std::string *req)
     int rc = recv(currSd, bf, BUFFER_SIZE, 0);
     if (rc <= 0)
     {
-        if (rc == -1)
-            strerror(errno);
+        if (rc == -1) {
+            perror("recv error");
+        }
         return rc;
     }
-    bf[rc + 1] = 0;
-    // for (int i = 0 ; i < rc + 1 ; i++)
-    //     std::cout << bf[i];
-    std::string str(bf, bf + rc + 1);
+    bf[rc] = 0;
+    std::string str(bf, bf + rc);
     (*req).append(str);
-    // std::cout << str;
-    // std::cout << "Taille req = " << (*req).size() << std::endl;
     return rc;
 }
+
 
 int Webserv::receiveRequest(int currSd)
 {

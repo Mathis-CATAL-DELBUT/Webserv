@@ -2,7 +2,6 @@
 
 Cgi::Cgi(Request *request, Parsing *config) : _request(request), _config(config) {
 	setEnv();
-	doCGI();
 }
 
 void Cgi::setEnv()
@@ -74,18 +73,21 @@ pid_t	Cgi::execScript(int *fd_in, int *fd_out) {
 	return (child_pid);
 }
 
-void	Cgi::doCGI()
+int	Cgi::doCGI()
 {
 	int fd[2];
 	if (pipe(fd) == -1) {
+		return (500);
 	} 
 	else {
 		int w_status, e_status;
 		waitpid(writeStdin(&fd[0], &fd[1]), &w_status, 0);
 		waitpid(execScript(&fd[0], &fd[1]), &e_status, 0);
 		if (w_status == 500 || e_status == 500) {
+			return (500);
 		}
 	}
+	return (200);
 }
 
 Cgi::~Cgi() {
