@@ -16,8 +16,9 @@ Parsing::Parsing(std::string file)
         this->listen.size() == 0)
     {
         std::cout << "Error Parsing: " << file << std::endl;
-        // exit(1);
+        exit(1);
     }
+	setErrorName();
 	setTimeout(false);
 	setExtension();
 	setDefaultErrorPage();

@@ -19,7 +19,7 @@ void	Response::setMethod() {
 	if (status == 200 && std::atoi(request->data["Content-Length"].c_str()) > config->getClientMaxBodySize())
 		status = 413;
 	else if (config->getMethod(request->data["Method"]) == true && status == 200) {
-		if (request->data["Method"] != "DELETE") {
+		if (request->data["Method"] == "POST" || request->data["Method"] == "GET") {
 			if (request->data["File"].find("CGI") != std::string::npos) {
 				Cgi cgi = Cgi(request, config);
 				status = cgi.doCGI();

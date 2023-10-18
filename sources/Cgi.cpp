@@ -19,7 +19,6 @@ void Cgi::setEnv()
     _env["REMOTE_IDENT"] = _request->data["Authorization"];
     _env["REMOTE_USER"] = _request->data["Authorization"];
     _env["SERVER_NAME"] = _config->getServerName();
-    _env["SERVER_PORT"] = "8043";
     _env["SERVER_PROTOCOL"] = "HTTP/1.1";
     _env["SERVER_SOFTWARE"] = "Webserv";
 	_cgi_env = mapToTab();
