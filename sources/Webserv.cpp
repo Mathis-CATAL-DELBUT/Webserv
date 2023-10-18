@@ -1,6 +1,6 @@
 #include "Webserv.hpp"
 
-Webserv::Webserv(Parsing* config) : _endServ(false), _timeout(false), ports(config->getListen())
+Webserv::Webserv(Parsing* config) : _endServ(false), ports(config->getListen())
 {
     _config = config;
     FD_ZERO(&rfds);
@@ -78,7 +78,7 @@ bool Webserv::processAllServ()
 
     while (!_endServ)
     {
-        timeout.tv_sec = 3 * 60;
+        timeout.tv_sec = 20;
         timeout.tv_usec = 0;
         rtmp = rfds;
         wtmp = wfds;
@@ -102,14 +102,11 @@ bool Webserv::processAllServ()
         }
         if (rc == 0)
         {
-            if (!this->_timeout)
-            {
-                this->_timeout = true; // + action
-                std::cout << "Timeout !" << std::endl;
-            }
+            _config->setTimeout(true); // + action
+            std::cout << "Timeout ! Socket " << _maxSd - 1 << " translated in writing" << std::endl;
+            FD_CLR(_maxSd - 1, &rfds);
+            FD_SET(_maxSd - 1, &wfds);
         }
-        else
-            this->_timeout = false;
         for (int i = 0 ; i <= _maxSd ; i++)
         {
             if (FD_ISSET(i, &rtmp) && this->serverS.count(i))
@@ -181,9 +178,8 @@ int Webserv::recving(int currSd, std::string *req)
     int rc = recv(currSd, bf, BUFFER_SIZE, 0);
     if (rc <= 0)
     {
-        if (rc == -1) {
-            perror("recv error");
-        }
+        if (rc == -1)
+            strerror(errno);
         return rc;
     }
     bf[rc] = 0;
@@ -191,7 +187,6 @@ int Webserv::recving(int currSd, std::string *req)
     (*req).append(str);
     return rc;
 }
-
 
 int Webserv::receiveRequest(int currSd)
 {
@@ -233,4 +228,6 @@ void Webserv::sendResponse(int currSd)
     clientS[currSd].first = NULL;
     clientS[currSd].second = NULL;
     FD_SET(currSd, &rfds);
+    if (_config->getTimeout())
+        _config->setTimeout(false);
 }

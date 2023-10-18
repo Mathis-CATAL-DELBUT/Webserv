@@ -32,6 +32,9 @@ class Parsing
 		const std::string&		    getDefaultErrorPage(const std::string& error_code);
 		const std::string&		    getExtension(const std::string& extension);
 		const std::string&			getErrorName(int status);
+		bool						getTimeout() const;
+
+		void						setTimeout(bool value);
         
     private:
         int                                 client_max_body_size;
@@ -49,6 +52,7 @@ class Parsing
 		std::map<std::string, std::string>	default_error;
 		std::map<std::string, std::string>	file_extension;
 		std::map<int, std::string>			_errorname;
+		bool								_timeout;
 
         int     setMethod(std::string file);
         int     setDirectoryListing(std::string file);

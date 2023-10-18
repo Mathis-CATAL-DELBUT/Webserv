@@ -45,7 +45,7 @@ class Webserv
 
     private:
         int _maxSd;
-        bool _endServ, _closeConn, _timeout;
+        bool _endServ, _closeConn;
         fd_set rtmp, wtmp, rfds, wfds;
         Parsing* _config;
         std::map<int, std::pair<Request*, Response*> > clientS;

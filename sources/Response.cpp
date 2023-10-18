@@ -174,6 +174,11 @@ void	Response::setBody(const std::string& file_path) {
 std::string Response::getResponse() {
 	std::stringstream buff;
 
+	if (config->getTimeout()) {
+		status = 408;
+		setBody(NULL);
+		content_type = "text/html";
+	}
 	buff << "HTTP/1.1 " << status << " " << config->getErrorName(status) << std::endl;
 	buff << "Server: " << "Webserv" << std::endl;
 	buff << "Date: " << getDate() << std::endl;
