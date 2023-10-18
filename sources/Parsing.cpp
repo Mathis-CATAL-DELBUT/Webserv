@@ -13,7 +13,7 @@ Parsing::Parsing(std::string file)
         setHtml(file) || setWelcome(file) ||
         setCss(file) || setClientMaxBodySize(file) || 
         setDirectoryListing(file) || setMethod(file) ||
-        this->listen.size() == 0)
+        setCgiExtension(file) || this->listen.size() == 0)
     {
         std::cout << "Error Parsing: " << file << std::endl;
         exit(1);
@@ -90,6 +90,16 @@ bool    Parsing::getMethod(std::string method) const
     for (std::vector<std::string>::size_type i = 0; i < this->method.size(); i++)
     {
         if (this->method[i] == method)
+            return (true);
+    }
+    return (false);
+}
+
+bool    Parsing::getCgiExtension(std::string extension) const
+{
+    for (std::vector<std::string>::size_type i = 0; i < this->cgi_extension.size(); i++)
+    {
+        if (this->cgi_extension[i] == extension)
             return (true);
     }
     return (false);
@@ -269,6 +279,14 @@ int Parsing::setMethod(std::string file)
         if (this->method[i] != "GET" && this->method[i] != "POST" && this->method[i] != "DELETE" && this->method[i] != "PUT" && this->method[i] != "HEAD" && this->method[i] != "CONNECT" && this->method[i] != "OPTIONS" && this->method[i] != "TRACE" && this->method[i] != "PATCH")
             return (1);
     }
+    return (0);
+}
+
+int Parsing::setCgiExtension(std::string file)
+{
+    this->cgi_extension = parseMultiEltString(file, "cgi_extension");
+    if (this->cgi_extension.size() == 0)
+        return (1);
     return (0);
 }
 

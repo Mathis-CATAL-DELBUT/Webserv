@@ -19,6 +19,7 @@ class Parsing
         
         int                         getClientMaxBodySize() const;
         bool                        getMethod(std::string methode) const;
+        bool                        getCgiExtension(std::string methode) const;
         std::vector<int>            getListen() const;
         std::string                 getServerName() const;
         std::string                 getDirectoryListing() const;
@@ -41,6 +42,7 @@ class Parsing
         std::vector<int>                    listen;
         std::vector<std::string>            error_page;  
         std::vector<std::string>            method;  
+        std::vector<std::string>            cgi_extension;  
         std::vector<std::string>            image;  
         std::vector<std::string>            html;  
         std::vector<std::string>            welcome;  
@@ -55,6 +57,7 @@ class Parsing
 		bool								_timeout;
 
         int     setMethod(std::string file);
+        int     setCgiExtension(std::string file);
         int     setDirectoryListing(std::string file);
         int     setClientMaxBodySize(std::string file);
         int     setListen(std::string file);
