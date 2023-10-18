@@ -19,7 +19,7 @@ class Parsing
         
         int                         getClientMaxBodySize() const;
         bool                        getMethod(std::string methode) const;
-        bool                        getCgiExtension(std::string methode) const;
+        bool                        getCgiExtension(std::string extension) const;
         std::vector<int>            getListen() const;
         std::string                 getServerName() const;
         std::string                 getDirectoryListing() const;

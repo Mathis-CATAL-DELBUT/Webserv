@@ -147,6 +147,7 @@ void Webserv::closeConn(int currSd)
     std::cout << "Connection " << currSd << " closed" << std::endl;
     close(currSd);
     FD_CLR(currSd, &rfds);
+	FD_CLR(currSd, &wfds);
     delete clientS[currSd].first;
     delete clientS[currSd].second;
     clientS[currSd].first = NULL;

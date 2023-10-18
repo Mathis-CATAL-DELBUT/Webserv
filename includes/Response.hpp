@@ -41,7 +41,8 @@ class Response {
 		
 		int status;
 		int content_length;
-		
+
+		std::string file_extension;		
 		std::string connection;
 		std::string content_type;
 		std::string	file_path;

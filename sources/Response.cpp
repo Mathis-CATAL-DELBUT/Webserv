@@ -7,9 +7,10 @@
 Response::Response() {}
 
 Response::Response(Parsing* i_config, Request* i_request) : config(i_config), request(i_request) {
-	unlink("data/CGI/.CGI.txt");
 	status = request->getStatus();
 	file_path = config->getRoot() + request->data["File"];
+	file_extension = &(file_path)[file_path.rfind(".") + 1];
+	connection = request->data["Connection"];
 	body = "";
 	content_length = 0;
 	setMethod();
@@ -20,7 +21,7 @@ void	Response::setMethod() {
 		status = 413;
 	else if (config->getMethod(request->data["Method"]) == true && status == 200) {
 		if (request->data["Method"] == "POST" || request->data["Method"] == "GET") {
-			if (request->data["File"].find("CGI") != std::string::npos) {
+			if (config->getCgiExtension(file_extension)) {
 				Cgi cgi = Cgi(request, config);
 				status = cgi.doCGI();
 				file_path = "data/CGI/.CGI.txt";
@@ -80,6 +81,7 @@ bool Response::checkDirectory(std::string& path) {
         DIR* dr = opendir((config->getRoot() + path).c_str());
         if (dr != NULL) 
 			file_path = "data/welcome_page/welcome_page.html";
+		closedir(dr);
 		return false;
     }
 }
@@ -129,7 +131,7 @@ void Response::checkFile(const std::string& file_path) {
     if (status != 403) {
         std::ifstream file(file_path.c_str(), std::ios::binary | std::ios::ate);
         if (file.is_open()) {
-            content_type = config->getExtension(&(file_path)[file_path.rfind(".") + 1]);
+            content_type = config->getExtension(file_extension);
             file.close();
         } else {
             status = 404;

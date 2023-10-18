@@ -1,6 +1,7 @@
 #include "Cgi.hpp"
 
 Cgi::Cgi(Request *request, Parsing *config) : _request(request), _config(config) {
+	unlink("data/CGI/.CGI.txt");
 	setEnv();
 }
 
