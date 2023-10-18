@@ -15,6 +15,8 @@ class Request {
 		Request(const Request& cpy);
 		
 		std::map<std::string, std::string> data;
+
+		int		getStatus() const;
 		
 	private:
 		void	display();
@@ -22,6 +24,8 @@ class Request {
 		void	parseFirstLine(const std::string& line);
 		void	parseHeader(const std::string& line);
 		void	parseRawBody();
+
+		int _status;
 		
 };
 

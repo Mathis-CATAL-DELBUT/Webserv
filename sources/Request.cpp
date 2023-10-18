@@ -2,7 +2,11 @@
 
 Request::Request() {}
 
-Request::Request(const std::string& s_request) {
+int Request::getStatus() const {
+	return (_status);
+}
+
+Request::Request(const std::string& s_request) : _status(200) {
 	std::string header;
 	size_t header_end = s_request.find("\r\n\r\n");
 	if (header_end != std::string::npos) {
@@ -20,16 +24,23 @@ Request::Request(const std::string& s_request) {
 	while (getline(iss, line)) {
 		if (line.find(':') != std::string::npos) { 
 			parseHeader(line);
+		} else {
+			_status = 400; 
 		}
 	}
+	if (data["Version"] != "HTTP/1.1")
+		_status = 505;
 	// display();
 }
 
 void	Request::parseFirstLine(const std::string& line) {
 	size_t pos = line.find(' ');
-	size_t pos_end = line.find(' ', pos + 1);
+	size_t pos_end = line.rfind(' ');
 	size_t qmark =  line.find('?');
+	if (pos == std::string::npos || pos_end == std::string::npos)
+		_status = 400;
 	data["Method"] = line.substr(0, pos);
+	data["Version"] = line.substr(pos_end + 1, line.size() - pos_end - 2);
 	if (qmark != std::string::npos) {
 		data["File"] = line.substr(pos + 1, qmark - pos - 1);
 		data["query"] = line.substr(qmark + 1, pos_end - qmark - 1);
@@ -64,6 +75,7 @@ void	Request::display() {
 		std::cout << it->first << " " << it->second << std::endl;
 		it++;
 	}
+	std::cout << "status :" << getStatus() << std::endl;
 }
 
 Request::~Request() {

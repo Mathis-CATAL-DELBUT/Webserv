@@ -8,7 +8,7 @@ Response::Response() {}
 
 Response::Response(Parsing* i_config, Request* i_request) : config(i_config), request(i_request) {
 	unlink("data/CGI/.CGI.txt");
-	status = 200;
+	status = request->getStatus();
 	file_path = config->getRoot() + request->data["File"];
 	body = "";
 	content_length = 0;
@@ -16,7 +16,7 @@ Response::Response(Parsing* i_config, Request* i_request) : config(i_config), re
 }
 
 void	Response::setMethod() { 
-	if (std::atoi(request->data["Content-Length"].c_str()) > config->getClientMaxBodySize())
+	if (status == 200 && std::atoi(request->data["Content-Length"].c_str()) > config->getClientMaxBodySize())
 		status = 413;
 	else if (config->getMethod(request->data["Method"]) == true && status == 200) {
 		if (request->data["Method"] != "DELETE") {
@@ -36,13 +36,16 @@ void	Response::setMethod() {
 				remove(file_path.c_str());
 			}
 		}
-	} else {
+		else {
+			status = 501;
+		}
+	} else if (status == 200) {
 		status = 405;
 	}
 	setBody(file_path);
-	if (content_length == 0)
+	if (status == 200 && content_length == 0)
 		status = 204;
-	if (content_type == "")
+	if (status == 200 && content_type == "")
 		status = 415;
 }
 
@@ -111,28 +114,29 @@ std::string Response::getDate() {
     return ss.str();
 }
 
-void	Response::checkFile(const std::string& file_path) {
-	std::ifstream file(file_path.c_str(), std::ios::binary | std::ios::ate);
-	if (file.is_open()) {
-		struct stat fileInfo;
-		if (stat(file_path.c_str(), &fileInfo) == 0) {
-			if (!(fileInfo.st_mode & S_IRUSR)) {
-				status = 403;
-			}
-			if (!(fileInfo.st_mode & S_IWUSR)) {
-				if (request->data["Method"] == "DELETE")
-					status = 403;
-			}
-			else {
-				content_type = config->getExtension(&(file_path)[file_path.rfind(".") + 1]);
-				file.close();
-			}
-		}
-	}
-	else {
-		status = 404;
-	}
+void Response::checkFile(const std::string& file_path) {
+    struct stat fileInfo;
+    if (stat(file_path.c_str(), &fileInfo) == 0) {
+        if (!(fileInfo.st_mode & S_IRUSR)) {
+            status = 403;
+        }
+        if (!(fileInfo.st_mode & S_IWUSR) && request->data["Method"] == "DELETE") {
+            status = 403;
+        }
+    } else {
+        status = 404;
+    }
+    if (status != 403) {
+        std::ifstream file(file_path.c_str(), std::ios::binary | std::ios::ate);
+        if (file.is_open()) {
+            content_type = config->getExtension(&(file_path)[file_path.rfind(".") + 1]);
+            file.close();
+        } else {
+            status = 404;
+        }
+    }
 }
+
 
 int	Response::getFileLength(std::ifstream& file) {
 	if (body != "")
@@ -154,11 +158,12 @@ std::string	Response::convertInt(int value) {
     return (oss.str());
 }
 
-void	Response::setBody(const std::string& file_path) {
+void	Response::setBody(const std::string& file) {
 	if (body == "" && status == 200)
-		body = getFileContent(file_path);
-	else if (body == "" && status != 200) {
+		body = getFileContent(file);
+	else if (status != 200) {
 		std::string file_path = config->getRoot() + "/error_page/" + convertInt(status) + ".html";
+		std::cout << file_path << std::endl;
 		std::ifstream file(file_path.c_str());
 		if (file.is_open()) 
 			body = getFileContent(file_path);
@@ -175,9 +180,9 @@ std::string Response::getResponse() {
 	std::stringstream buff;
 
 	if (config->getTimeout()) {
+		connection = "close";
 		status = 408;
-		setBody(NULL);
-		content_type = "text/html";
+		setBody("");
 	}
 	buff << "HTTP/1.1 " << status << " " << config->getErrorName(status) << std::endl;
 	buff << "Server: " << "Webserv" << std::endl;

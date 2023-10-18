@@ -34,7 +34,7 @@ class Response {
 		int					getFileLength(std::ifstream& file);
 		
 		void				setMethod();
-		void				setBody(const std::string& file_path);
+		void				setBody(const std::string& file);
 		std::string			convertInt(int value);
 		void				checkFile(const std::string& file_path);
 		bool				checkDirectory(std::string& path);

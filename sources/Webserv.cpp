@@ -73,12 +73,12 @@ bool Webserv::processAllServ()
     int rc;
     timeval timeout;
 
-    timeout.tv_sec = 20;
+    timeout.tv_sec = 3 * 60;
     timeout.tv_usec = 0;
 
     while (!_endServ)
     {
-        timeout.tv_sec = 20;
+        timeout.tv_sec = 3 * 60;
         timeout.tv_usec = 0;
         rtmp = rfds;
         wtmp = wfds;
@@ -103,9 +103,10 @@ bool Webserv::processAllServ()
         if (rc == 0)
         {
             _config->setTimeout(true); // + action
-            std::cout << "Timeout ! Socket " << _maxSd - 1 << " translated in writing" << std::endl;
-            FD_CLR(_maxSd - 1, &rfds);
-            FD_SET(_maxSd - 1, &wfds);
+            // std::cout << "Timeout ! Socket " << _maxSd << " translated in writing" << std::endl;
+            // FD_CLR(_maxSd, &rfds);
+            // FD_SET(_maxSd, &wfds);
+            // clientS[_maxSd] = std::make_pair(new Request(), new Response());
         }
         for (int i = 0 ; i <= _maxSd ; i++)
         {
@@ -193,7 +194,7 @@ int Webserv::receiveRequest(int currSd)
     int allbytes = 0, rc = BUFFER_SIZE;
     std::string req = "";
 
-    std::cout << "Receiving . . . REQ = " << req.size() << std::endl;
+    std::cout << "Receiving . . . " << std::endl;
     while (rc == BUFFER_SIZE)
     {
         rc = recving(currSd, &req);
@@ -219,7 +220,6 @@ void Webserv::sendResponse(int currSd)
     std::cout << "Sending . . ." << std::endl;
 	clientS[currSd].second = new Response(_config, clientS[currSd].first);
     int rc = send(currSd, (clientS[currSd].second->getResponse()).c_str(), (clientS[currSd].second->getResponse()).size(), 0);
-    std::cout << "Response sent for " << clientS[currSd].first->data["File"] << std::endl;
     if (rc < 0)
         strerror(errno); //a modifier pour retourner erreur si il ya
     FD_CLR(currSd, &wfds);
