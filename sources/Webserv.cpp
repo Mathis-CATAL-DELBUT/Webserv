@@ -102,14 +102,11 @@ bool Webserv::processAllServ()
         }
         if (rc == 0)
         {
-            if (!this->_timeout)
-            {
-                this->_timeout = true; // + action
-                std::cout << "Timeout !" << std::endl;
-            }
+            this->_timeout = true; // + action
+            std::cout << "Timeout ! Socket " << _maxSd - 1 << " translated in writing" << std::endl;
+            FD_CLR(_maxSd - 1, &rfds);
+            FD_SET(_maxSd - 1, &wfds);
         }
-        else
-            this->_timeout = false;
         for (int i = 0 ; i <= _maxSd ; i++)
         {
             if (FD_ISSET(i, &rtmp) && this->serverS.count(i))
@@ -185,13 +182,9 @@ int Webserv::recving(int currSd, std::string *req)
             strerror(errno);
         return rc;
     }
-    bf[rc + 1] = 0;
-    // for (int i = 0 ; i < rc + 1 ; i++)
-    //     std::cout << bf[i];
-    std::string str(bf, bf + rc + 1);
+    bf[rc] = 0;
+    std::string str(bf, bf + rc);
     (*req).append(str);
-    // std::cout << str;
-    // std::cout << "Taille req = " << (*req).size() << std::endl;
     return rc;
 }
 
@@ -235,4 +228,6 @@ void Webserv::sendResponse(int currSd)
     clientS[currSd].first = NULL;
     clientS[currSd].second = NULL;
     FD_SET(currSd, &rfds);
+    if (this->_timeout)
+        this->_timeout = false;
 }
