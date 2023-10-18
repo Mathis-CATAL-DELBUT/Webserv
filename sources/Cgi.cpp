@@ -50,7 +50,7 @@ pid_t Cgi::writeStdin(int *fd_in, int *fd_out) {
 		close(*fd_in);
 		close(*fd_out);
         if (execve("/usr/bin/echo", args, env) == -1)
-			exit(500);
+			exit(13);
     } else {
 		close(*fd_out);
     }
@@ -64,7 +64,7 @@ pid_t	Cgi::execScript(int *fd_in, int *fd_out) {
 		dup2(*fd_in, STDIN_FILENO);
 		close(*fd_in);
 		if (execve((_config->getRoot() + std::string(_request->data["File"])).c_str(), av, _cgi_env) == -1)
-			exit(500);
+			exit(13);
 	} else {
        	close(*fd_in);
         close(*fd_out);
@@ -82,7 +82,8 @@ int	Cgi::doCGI()
 		int w_status, e_status;
 		waitpid(writeStdin(&fd[0], &fd[1]), &w_status, 0);
 		waitpid(execScript(&fd[0], &fd[1]), &e_status, 0);
-		if (w_status == 500 || e_status == 500) {
+		std::cout << "e_status:" << WEXITSTATUS(e_status) << " w_status: " << WEXITSTATUS(w_status) << std::endl;
+		if (WEXITSTATUS(w_status) == 13 || WEXITSTATUS(e_status) == 13) {
 			return (500);
 		}
 	}
