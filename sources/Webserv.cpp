@@ -1,6 +1,6 @@
 #include "Webserv.hpp"
 
-Webserv::Webserv(Parsing* config) : _endServ(false), _timeout(false), ports(config->getListen())
+Webserv::Webserv(Parsing* config) : _endServ(false), ports(config->getListen())
 {
     _config = config;
     FD_ZERO(&rfds);
@@ -73,12 +73,12 @@ bool Webserv::processAllServ()
     int rc;
     timeval timeout;
 
-    timeout.tv_sec = 20;
+    timeout.tv_sec = 10;
     timeout.tv_usec = 0;
 
     while (!_endServ)
     {
-        timeout.tv_sec = 3 * 60;
+        timeout.tv_sec = 10;
         timeout.tv_usec = 0;
         rtmp = rfds;
         wtmp = wfds;
@@ -102,10 +102,11 @@ bool Webserv::processAllServ()
         }
         if (rc == 0)
         {
-            this->_timeout = true; // + action
-            std::cout << "Timeout ! Socket " << _maxSd - 1 << " translated in writing" << std::endl;
-            FD_CLR(_maxSd - 1, &rfds);
-            FD_SET(_maxSd - 1, &wfds);
+            _config->setTimeout(true); // + action
+            // std::cout << "Timeout ! Socket " << _maxSd << " translated in writing" << std::endl;
+            // FD_CLR(_maxSd, &rfds);
+            // FD_SET(_maxSd, &wfds);
+            // clientS[_maxSd] = std::make_pair(new Request(), new Response());
         }
         for (int i = 0 ; i <= _maxSd ; i++)
         {
@@ -193,7 +194,7 @@ int Webserv::receiveRequest(int currSd)
     int allbytes = 0, rc = BUFFER_SIZE;
     std::string req = "";
 
-    std::cout << "Receiving . . . REQ = " << req.size() << std::endl;
+    std::cout << "Receiving . . . " << std::endl;
     while (rc == BUFFER_SIZE)
     {
         rc = recving(currSd, &req);
@@ -220,6 +221,8 @@ void Webserv::sendResponse(int currSd)
 	clientS[currSd].second = new Response(_config, clientS[currSd].first);
     int rc = send(currSd, (clientS[currSd].second->getResponse()).c_str(), (clientS[currSd].second->getResponse()).size(), 0);
     std::cout << "Response sent for " << clientS[currSd].first->data["File"] << std::endl;
+    std::cout << (clientS[currSd].second->getResponse()).c_str() << std::endl;
+    std::cout << "SIZE = " << (clientS[currSd].second->getResponse()).size() << std::endl;
     if (rc < 0)
         strerror(errno); //a modifier pour retourner erreur si il ya
     FD_CLR(currSd, &wfds);
@@ -228,6 +231,6 @@ void Webserv::sendResponse(int currSd)
     clientS[currSd].first = NULL;
     clientS[currSd].second = NULL;
     FD_SET(currSd, &rfds);
-    if (this->_timeout)
-        this->_timeout = false;
+    if (_config->getTimeout())
+        _config->setTimeout(false);
 }

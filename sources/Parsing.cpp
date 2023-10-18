@@ -18,6 +18,7 @@ Parsing::Parsing(std::string file)
         std::cout << "Error Parsing: " << file << std::endl;
         // exit(1);
     }
+	setTimeout(false);
 	setExtension();
 	setDefaultErrorPage();
 }
@@ -91,6 +92,15 @@ bool    Parsing::getMethod(std::string method) const
             return (true);
     }
     return (false);
+}
+
+bool	Parsing::getTimeout() const
+{
+	return (_timeout);
+}
+
+void	Parsing::setTimeout(bool value) {
+	_timeout = value;
 }
 
 int Parsing::setServerName(std::string file)

@@ -20,7 +20,7 @@ class Cgi {
 		pid_t	execScript(int *fd_int, int* fd_out);
 		char**	mapToTab();
 		void	setEnv();
-		void	doCGI();
+		int		doCGI();
 
 	private:
 		Cgi();

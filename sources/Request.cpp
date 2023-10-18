@@ -7,7 +7,7 @@ Request::Request(const std::string& s_request) {
 	size_t header_end = s_request.find("\r\n\r\n");
 	if (header_end != std::string::npos) {
 		header = s_request.substr(0, header_end);
-		data["body"] = s_request.substr(header_end + 4, s_request.size() - header_end - 5);
+		data["body"] = s_request.substr(header_end + 4, s_request.size() - header_end - 4);
 	}
 	else {
 		header = s_request;
