@@ -76,6 +76,7 @@ class Parsing
         std::vector<std::string> parseMultiEltString(std::string file, std::string name);
         int onlyNumber(std::string str);
         int checkLink(std::string str);
+        int doubleListen(std::vector<int> listen);
 };
 
 #endif

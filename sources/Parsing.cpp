@@ -178,6 +178,19 @@ int Parsing::setCss(std::string file)
     return (0);
 }
 
+int Parsing::doubleListen(std::vector<int> listen)
+{
+    for (std::vector<int>::size_type i = 0; i < listen.size(); i++)
+    {
+        for (std::vector<int>::size_type j = 0; j < listen.size(); j++)
+        {
+            if (i != j && listen[i] == listen[j])
+                return (1);
+        }
+    }
+    return (0);
+}
+
 int Parsing::setListen(std::string file)
 {
     std::string line;
@@ -192,7 +205,11 @@ int Parsing::setListen(std::string file)
                 while (getline(fd, line))
                 {
                     if (removeSpace(line) == "}")
+                    {
+                        if (doubleListen(this->listen) == 1)
+                            return (1);
                         return (0);
+                    }
                     else
                     {
                         removeSpace(line, file);
