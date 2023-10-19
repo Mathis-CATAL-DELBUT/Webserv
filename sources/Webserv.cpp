@@ -52,7 +52,7 @@ int Webserv::initServ(int port)
     rc = setsockopt(_listenSd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on));
     if (rc < 0)
         return (handlingErrorInit("setsockopt", _listenSd));
-    rc = fcntl(_listenSd, F_SETFL, O_NONBLOCK);
+    rc = fcntl(_listenSd, F_SETFL, O_NONBLOCK, FD_CLOEXEC);
     if (rc < 0)
         return (handlingErrorInit("fcntl", _listenSd));
     std::memset(&addr, 0, sizeof(addr));
@@ -73,12 +73,12 @@ bool Webserv::processAllServ()
     int rc;
     timeval timeout;
 
-    timeout.tv_sec = 3 * 60;
+    timeout.tv_sec = 15;
     timeout.tv_usec = 0;
 
     while (!_endServ)
     {
-        timeout.tv_sec = 3 * 60;
+        timeout.tv_sec = 15;
         timeout.tv_usec = 0;
         rtmp = rfds;
         wtmp = wfds;
@@ -102,11 +102,9 @@ bool Webserv::processAllServ()
         }
         if (rc == 0)
         {
-            _config->setTimeout(true); // + action
-            // std::cout << "Timeout ! Socket " << _maxSd << " translated in writing" << std::endl;
-            // FD_CLR(_maxSd, &rfds);
-            // FD_SET(_maxSd, &wfds);
-            // clientS[_maxSd] = std::make_pair(new Request(), new Response());
+            _config->setTimeout(true);
+            _endServ = true;
+            continue;
         }
         for (int i = 0 ; i <= _maxSd ; i++)
         {
@@ -199,7 +197,6 @@ int Webserv::receiveRequest(int currSd)
     while (rc == BUFFER_SIZE)
     {
         rc = recving(currSd, &req);
-        // std::cout << "rc = " << rc << std::endl;
         if (rc <= 0)
         {
             if (rc == -1)
@@ -209,7 +206,6 @@ int Webserv::receiveRequest(int currSd)
         allbytes += rc;
     }
     std::cout << "All data received : " << allbytes << " bytes" << std::endl;
-    // std::cout << "SIZE STRING >>>>>>>>> " << req.size() << std::endl;
     clientS[currSd] = std::make_pair(new Request(req), new Response());
     FD_CLR(currSd, &rfds);
     FD_SET(currSd, &wfds);
@@ -219,10 +215,11 @@ int Webserv::receiveRequest(int currSd)
 void Webserv::sendResponse(int currSd)
 {
     std::cout << "Sending . . ." << std::endl;
+    delete clientS[currSd].second;
 	clientS[currSd].second = new Response(_config, clientS[currSd].first);
     int rc = send(currSd, (clientS[currSd].second->getResponse()).c_str(), (clientS[currSd].second->getResponse()).size(), 0);
     if (rc < 0)
-        strerror(errno); //a modifier pour retourner erreur si il ya
+        strerror(errno);
     FD_CLR(currSd, &wfds);
     delete clientS[currSd].first;
     delete clientS[currSd].second;

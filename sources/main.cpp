@@ -14,8 +14,8 @@ int main(int argc, char **argv)
 
     Webserv ws(config);
     if (ws.initAllServ() == false)
-        return 0;
+        return delete config, 1;
     if (ws.processAllServ() == false)
-        return 0;
-    return (0);
+        return delete config, 1;
+    return (delete config, 0);
 }
