@@ -9,13 +9,13 @@
     <h1>Formulaire d'âge</h1>
     <form action="CGI/age.php" method="GET">
         <label for="nom">Nom : </label>
-        <input type="text" id="nom" name="nom" required><br>
+        <input maxlength="25" type="text" id="nom" name="nom" required><br>
         
         <label for="prenom">First name  : </label>
-        <input type="text" id="prenom" name="prenom" required><br>
+        <input maxlength="25" type="text" id="prenom" name="prenom" required><br>
         
         <label for="age">Age : </label>
-        <input type="number" id="age" name="age" required><br>
+        <input maxlength="3" ype="number" id="age" name="age" required><br>
 
         <input type="submit" value="Envoyer">
     </form>
