@@ -1,13 +1,11 @@
 #!/usr/bin/php-cgi
 <?php
 
-// Get form data from the POST request
 $nom = isset($_POST['nom']) ? $_POST['nom'] : '';
 $prenom = isset($_POST['prenom']) ? $_POST['prenom'] : '';
 $email = isset($_POST['email']) ? $_POST['email'] : '';
 $message = isset($_POST['message']) ? $_POST['message'] : '';
 
-// Create the HTML response
 $file_path = ".CGI.txt";
 $html_content = "<!DOCTYPE html>
 <html lang=\"en\">
@@ -30,8 +28,6 @@ $html_content = "<!DOCTYPE html>
 </html>";
 
 if (file_put_contents($file_path, $html_content) === false) {
-    echo "Échec de l'écriture du fichier.";
-} else {
-    echo "Données enregistrées avec succès.";
-}
+	exit(13);
+} 
 ?>
