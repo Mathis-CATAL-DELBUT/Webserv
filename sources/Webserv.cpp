@@ -103,7 +103,7 @@ bool Webserv::processAllServ()
         if (rc == 0)
         {
             _config->setTimeout(true);
-            _endServ = true;
+            // _endServ = true;
             continue;
         }
         for (int i = 0 ; i <= _maxSd ; i++)
