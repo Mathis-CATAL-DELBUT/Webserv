@@ -17,7 +17,7 @@ Response::Response(Parsing* i_config, Request* i_request) : config(i_config), re
 }
 
 void	Response::setMethod() { 
-	if (status == 200 && std::atoi(request->data["Content-Length"].c_str()) > config->getClientMaxBodySize())
+	if (status == 200 && (std::atoi(request->data["Content-Length"].c_str()) > config->getClientMaxBodySize()))
 		status = 413;
 	else if (config->getMethod(request->data["Method"]) == true && status == 200) {
 		if (request->data["Method"] == "POST" || request->data["Method"] == "GET") {

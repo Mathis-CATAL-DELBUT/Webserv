@@ -56,17 +56,8 @@ std::string Parsing::getIndex() const
 std::string Parsing::getErrorPage()
 {return (this->error_page);}
 
-std::vector<std::string> Parsing::getImage() const
-{return (this->image);}
-
-std::vector<std::string> Parsing::getHtml() const
-{return (this->html);}
-
 std::string Parsing::getWelcome() const
 {return (this->welcome);}
-
-std::vector<std::string> Parsing::getCss() const
-{return (this->css);}
 
 int Parsing::getClientMaxBodySize() const
 {return (this->client_max_body_size);}
@@ -143,18 +134,6 @@ int Parsing::setErrorPage(std::string file)
     return (0);
 }
 
-int Parsing::setHtml(std::string file)
-{
-    this->html = parseMultiEltString(file, "Html");
-    if (this->html.size() == 0)
-        return (1);
-    for (std::vector<std::string>::size_type i = 0; i < this->html.size(); i++)
-    {
-        if (checkLink(this->html[i]) == 1)
-            return (1);
-    }
-    return (0);
-}
 
 int Parsing::setWelcome(std::string file)
 {
@@ -164,18 +143,6 @@ int Parsing::setWelcome(std::string file)
     return (0);
 }
 
-int Parsing::setCss(std::string file)
-{
-    this->css = parseMultiEltString(file, "css");
-    if (this->css.size() == 0)
-        return (1);
-    for (std::vector<std::string>::size_type i = 0; i < this->css.size(); i++)
-    {
-        if (checkLink(this->css[i]) == 1)
-            return (1);
-    }
-    return (0);
-}
 
 int Parsing::doubleListen(std::vector<int> listen)
 {
@@ -226,18 +193,6 @@ int Parsing::setListen(std::string file)
     return (1);
 }
 
-int Parsing::setImage(std::string file)
-{
-    this->image = parseMultiEltString(file, "image");
-    if (this->image.size() == 0)
-        return (1);
-    for (std::vector<std::string>::size_type i = 0; i < this->html.size(); i++)
-    {
-        if (checkLink(this->image[i]) == 1)
-            return (1);
-    }
-    return (0);
-}
 
 int Parsing::setClientMaxBodySize(std::string file)
 {
@@ -246,6 +201,8 @@ int Parsing::setClientMaxBodySize(std::string file)
     if (client == "" || onlyNumber(client) == 1)
         return (1);
     this->client_max_body_size = atoi(client.c_str());
+    if (this->client_max_body_size > 10000)
+        return (std::cout << "client_max_body_size is too large" << std::endl, 1);
     return (0);
 }
 
