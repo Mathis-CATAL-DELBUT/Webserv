@@ -300,7 +300,7 @@ const std::string&	Parsing::getErrorName(int status) {
 void Parsing::removeSpace(std::string &str, std::string file)
 {
     int i = 0;
-    while (str[i] == ' ')
+    while (str[i] == ' ' || str[i] == '\t')
         str.erase(i, 1);
     while (str[i])
             i++;
@@ -311,6 +311,7 @@ void Parsing::removeSpace(std::string &str, std::string file)
     }
     str.erase(i - 1, 1);
 }
+
 
 std::string Parsing::removeSpace(std::string &str)
 {
