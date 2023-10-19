@@ -2,7 +2,8 @@
 
 Parsing::Parsing(std::string file)
 {
-    if (open(file.c_str(), O_RDONLY) != 3)
+    std::ifstream fileStream(file.c_str());
+    if (!fileStream.is_open())
     {
         std::cout << "Error: " << file  << ": not foud or no perm" << std::endl;
         exit(1);
@@ -21,6 +22,7 @@ Parsing::Parsing(std::string file)
 	setTimeout(false);
 	setExtension();
 	setDefaultErrorPage();
+    fileStream.close();
 }
 
 Parsing::~Parsing(){}

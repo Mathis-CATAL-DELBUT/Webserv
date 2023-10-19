@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <cstdlib>
 #include <map>
+#include <fstream>
 
 class Parsing
 {
