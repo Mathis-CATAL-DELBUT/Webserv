@@ -134,6 +134,8 @@ int Parsing::setErrorPage(std::string file)
     this->error_page = parseSoloElt(file, "error_page");
     if (this->error_page.size() == 0)
         return (1);
+	if (checkLink(this->error_page) == 1)
+		return (1);
     return (0);
 }
 
@@ -143,6 +145,8 @@ int Parsing::setWelcome(std::string file)
     this->welcome = parseSoloElt(file, "welcome_page");
     if (this->welcome.size() == 0)
         return (1);
+	if (checkLink(this->welcome) == 1)
+		return (1);
     return (0);
 }
 
