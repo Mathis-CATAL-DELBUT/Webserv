@@ -80,7 +80,7 @@ bool Response::checkDirectory(std::string& path) {
 	{
         DIR* dr = opendir((config->getRoot() + path).c_str());
         if (dr != NULL) 
-			file_path = "data/welcome_page/welcome_page.html";
+			file_path = config->getRoot() + "/" + config->getWelcome();
 		closedir(dr);
 		return false;
     }
@@ -164,7 +164,7 @@ void	Response::setBody(const std::string& file) {
 	if (body == "" && status == 200)
 		body = getFileContent(file);
 	else if (status != 200) {
-		std::string file_path = config->getRoot() + "/error_page/" + convertInt(status) + ".html";
+		std::string file_path = config->getRoot() + "/" + config->getErrorPage() + "/" + convertInt(status) + ".html";
 		std::cout << file_path << std::endl;
 		std::ifstream file(file_path.c_str());
 		if (file.is_open()) 

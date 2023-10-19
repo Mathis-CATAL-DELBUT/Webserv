@@ -9,9 +9,8 @@ Parsing::Parsing(std::string file)
     }
     if (setListen(file) || setServerName(file) || 
         setRoot(file) || setIndex(file) || 
-        setErrorPage(file) || setImage(file) || 
-        setHtml(file) || setWelcome(file) ||
-        setCss(file) || setClientMaxBodySize(file) || 
+        setErrorPage(file) || setWelcome(file) ||
+        setClientMaxBodySize(file) || 
         setDirectoryListing(file) || setMethod(file) ||
         setCgiExtension(file) || this->listen.size() == 0)
     {
@@ -54,7 +53,7 @@ std::string Parsing::getRoot() const
 std::string Parsing::getIndex() const
 {return (this->index);}
 
-std::vector<std::string> Parsing::getErrorPage()
+std::string Parsing::getErrorPage()
 {return (this->error_page);}
 
 std::vector<std::string> Parsing::getImage() const
@@ -63,7 +62,7 @@ std::vector<std::string> Parsing::getImage() const
 std::vector<std::string> Parsing::getHtml() const
 {return (this->html);}
 
-std::vector<std::string> Parsing::getWelcome() const
+std::string Parsing::getWelcome() const
 {return (this->welcome);}
 
 std::vector<std::string> Parsing::getCss() const
@@ -138,14 +137,9 @@ int Parsing::setIndex(std::string file)
 }
 int Parsing::setErrorPage(std::string file)
 {
-    this->error_page = parseMultiEltString(file, "error_page");
+    this->error_page = parseSoloElt(file, "error_page");
     if (this->error_page.size() == 0)
         return (1);
-    for (std::vector<std::string>::size_type i = 0; i < this->error_page.size(); i++)
-    {
-        if (checkLink(this->error_page[i]) == 1)
-            return (1);
-    }
     return (0);
 }
 
@@ -164,14 +158,9 @@ int Parsing::setHtml(std::string file)
 
 int Parsing::setWelcome(std::string file)
 {
-    this->welcome = parseMultiEltString(file, "welcome_page");
+    this->welcome = parseSoloElt(file, "welcome_page");
     if (this->welcome.size() == 0)
         return (1);
-    for (std::vector<std::string>::size_type i = 0; i < this->welcome.size(); i++)
-    {
-        if (checkLink(this->welcome[i]) == 1)
-            return (1);
-    }
     return (0);
 }
 

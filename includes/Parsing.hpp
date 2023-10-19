@@ -25,10 +25,10 @@ class Parsing
         std::string                 getDirectoryListing() const;
         std::string                 getRoot() const;
         std::string                 getIndex() const;
-        std::vector<std::string>    getErrorPage();
+        std::string				    getErrorPage();
         std::vector<std::string>    getImage() const;
         std::vector<std::string>    getHtml() const;
-        std::vector<std::string>    getWelcome() const;
+        std::string				    getWelcome() const;
         std::vector<std::string>    getCss() const;
 		const std::string&		    getDefaultErrorPage(const std::string& error_code);
 		const std::string&		    getExtension(const std::string& extension);
@@ -40,12 +40,12 @@ class Parsing
     private:
         int                                 client_max_body_size;
         std::vector<int>                    listen;
-        std::vector<std::string>            error_page;  
+        std::string				            error_page;  
         std::vector<std::string>            method;  
         std::vector<std::string>            cgi_extension;  
         std::vector<std::string>            image;  
         std::vector<std::string>            html;  
-        std::vector<std::string>            welcome;  
+        std::string				            welcome;  
         std::vector<std::string>            css;  
         std::string                         server_name;
         std::string                         directory_listing;
