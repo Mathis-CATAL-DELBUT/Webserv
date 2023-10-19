@@ -6,7 +6,7 @@ Parsing::Parsing(std::string file)
     if (!fileStream.is_open())
     {
         std::cout << "Error: " << file  << ": not foud or no perm" << std::endl;
-        exit(1);
+		std::exit(1);
     }
     if (setListen(file) || setServerName(file) || 
         setRoot(file) || setIndex(file) || 
@@ -16,7 +16,8 @@ Parsing::Parsing(std::string file)
         setCgiExtension(file) || this->listen.size() == 0)
     {
         std::cout << "Error Parsing: " << file << std::endl;
-        exit(1);
+		fileStream.close();
+    	std::exit(1);
     }
 	setErrorName();
 	setTimeout(false);
@@ -306,7 +307,7 @@ void Parsing::removeSpace(std::string &str, std::string file)
     if (str[i - 1] != ';')
     {
         std::cout << "Error Parsing: " << file << std::endl;
-        exit(1);
+        std::exit(1);
     }
     str.erase(i - 1, 1);
 }

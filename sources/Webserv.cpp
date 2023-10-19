@@ -73,12 +73,12 @@ bool Webserv::processAllServ()
     int rc;
     timeval timeout;
 
-    timeout.tv_sec = 15;
+    timeout.tv_sec = 3 * 60;
     timeout.tv_usec = 0;
 
     while (!_endServ)
     {
-        timeout.tv_sec = 15;
+        timeout.tv_sec = 3 * 60;
         timeout.tv_usec = 0;
         rtmp = rfds;
         wtmp = wfds;
